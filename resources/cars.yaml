@@ -1,0 +1,12 @@
+ferrari:
+  acceleration: 0.2
+  handling: 10
+  max_speed: 6
+  max_reverse_speed: 3
+  friction: 0.97
+mclaren:
+  acceleration: 0.4
+  handling: 10
+  max_speed: 10
+  max_reverse_speed: 4
+  friction: 0.97
