@@ -1,7 +1,6 @@
 import pygame
 # import random
 # import numpy as np
-from collections import namedtuple
 
 from car import Car
 from utils.enums import *
@@ -11,8 +10,6 @@ font = pygame.font.SysFont('arial', 25)
 
 
 SPEED = 30
-
-Position = namedtuple('Position', 'x, y')
 
 
 class CarGameAI:
@@ -42,24 +39,24 @@ class CarGameAI:
 
         if action == 1:
             self.car.accelerate()
-            self.car.turn(Direction.RIGHT)
+            self.car.turn(Direction.LEFT)
         elif action == 2:
             self.car.accelerate()
         elif action == 3:
             self.car.accelerate()
-            self.car.turn(Direction.LEFT)
+            self.car.turn(Direction.RIGHT)
         elif action == 4:
-            self.car.turn(Direction.LEFT)
+            self.car.turn(Direction.RIGHT)
         elif action == 5:
             self.car.brake()
-            self.car.turn(Direction.LEFT)
+            self.car.turn(Direction.RIGHT)
         elif action == 6:
             self.car.brake()
         elif action == 7:
             self.car.brake()
-            self.car.turn(Direction.RIGHT)
+            self.car.turn(Direction.LEFT)
         elif action == 8:
-            self.car.turn(Direction.RIGHT)
+            self.car.turn(Direction.LEFT)
         else:
             pass
 

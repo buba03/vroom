@@ -69,7 +69,8 @@ class Car:
             self.velocity = max(self.velocity+acceleration, self.max_reverse_speed)
 
     def move(self):
-        self.velocity = self.velocity - self.friction if not abs(self.velocity) < self.friction else 0
+        friction_multiplier = -1 if self.velocity < 0 else 1
+        self.velocity = self.velocity - self.friction * friction_multiplier if not abs(self.velocity) < self.friction else 0
 
         direction = rotate_vector((self.velocity, 0), self.angle)
         self.x_position += direction[0]
@@ -77,9 +78,13 @@ class Car:
 
     # FIXME
     def turn(self, direction):
-        direction_multiplier = 1 if direction == Direction.RIGHT else -1
+        # Change multiplier based on Right - Left
+        direction_multiplier = -1 if direction == Direction.RIGHT else 1
+        # Change multiplier based in Velocity
         direction_multiplier = -direction_multiplier if self.velocity < 0 else direction_multiplier
+
         # angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
+
         angle = self.handling
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
