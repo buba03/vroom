@@ -22,7 +22,7 @@ class CarGameAI:
         self.screen_height = screen_height
 
         # Car
-        self.car = Car(CarID.MCLAREN.value)
+        self.car = Car(CarID.FERRARI.value)
 
         # init display
         self.display = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -52,12 +52,12 @@ class CarGameAI:
             self.car.turn(Direction.LEFT)
         elif action == 5:
             self.car.brake()
-            self.car.turn(Direction.RIGHT)
+            self.car.turn(Direction.LEFT)
         elif action == 6:
             self.car.brake()
         elif action == 7:
             self.car.brake()
-            self.car.turn(Direction.LEFT)
+            self.car.turn(Direction.RIGHT)
         elif action == 8:
             self.car.turn(Direction.RIGHT)
         else:

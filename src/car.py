@@ -78,6 +78,7 @@ class Car:
     # FIXME
     def turn(self, direction):
         direction_multiplier = 1 if direction == Direction.RIGHT else -1
+        direction_multiplier = -direction_multiplier if self.velocity < 0 else direction_multiplier
         # angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
         angle = self.handling
         self.angle += angle * direction_multiplier
