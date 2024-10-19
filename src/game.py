@@ -9,7 +9,7 @@ pygame.init()
 font = pygame.font.SysFont('arial', 25)
 
 
-SPEED = 30
+FPS = 30
 
 
 class CarGameAI:
@@ -65,8 +65,10 @@ class CarGameAI:
                 pygame.quit()
                 quit()
 
+        # TODO move before or after action ?
+        self.car.move()
         self._update_ui()
-        self.clock.tick(SPEED)
+        self.clock.tick(FPS)
         return reward, game_over, score
 
     def _update_ui(self):

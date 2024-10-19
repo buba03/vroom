@@ -69,10 +69,14 @@ class Car:
             self.velocity = max(self.velocity+acceleration, self.max_reverse_speed)
 
     def move(self):
+        # Change friction multiplier based on velocity
         friction_multiplier = -1 if self.velocity < 0 else 1
+        # Apply friction
         self.velocity = self.velocity - self.friction * friction_multiplier if not abs(self.velocity) < self.friction else 0
 
+        # Calculate movement vector based on velocity and angle
         direction = rotate_vector((self.velocity, 0), self.angle)
+        # Change position based on the movement vector
         self.x_position += direction[0]
         self.y_position += direction[1]
 
@@ -91,9 +95,11 @@ class Car:
         print(angle)
 
     def draw(self, display):
-        self.move()
-
+        # Draw car based on rotation
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         rotated_rect = rotated_image.get_rect(center=(self.x_position, self.y_position))
+        # Draw
         display.blit(rotated_image, rotated_rect)
+
+        # Hit-box
         pygame.draw.rect(display, (0, 255, 0), rotated_rect, 2)
