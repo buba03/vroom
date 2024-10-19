@@ -69,9 +69,9 @@ class Car:
             self.velocity = max(self.velocity+acceleration, self.max_reverse_speed)
 
     def move(self):
-        self.velocity *= self.friction
+        self.velocity = self.velocity - self.friction if not abs(self.velocity) < self.friction else 0
 
-        direction = rotate_vector((self.velocity*self.friction, 0), self.angle)
+        direction = rotate_vector((self.velocity, 0), self.angle)
         self.x_position += direction[0]
         self.y_position += direction[1]
 
