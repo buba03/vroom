@@ -42,24 +42,24 @@ class CarGameAI:
 
         if action == 1:
             self.car.accelerate()
-            self.car.rotate(10)
+            self.car.turn(Direction.RIGHT)
         elif action == 2:
             self.car.accelerate()
         elif action == 3:
             self.car.accelerate()
-            self.car.rotate(-10)
+            self.car.turn(Direction.LEFT)
         elif action == 4:
-            self.car.rotate(-10)
+            self.car.turn(Direction.LEFT)
         elif action == 5:
             self.car.brake()
-            self.car.rotate(10)
+            self.car.turn(Direction.RIGHT)
         elif action == 6:
             self.car.brake()
         elif action == 7:
             self.car.brake()
-            self.car.rotate(-10)
+            self.car.turn(Direction.LEFT)
         elif action == 8:
-            self.car.rotate(10)
+            self.car.turn(Direction.RIGHT)
         else:
             pass
 

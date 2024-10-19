@@ -7,6 +7,11 @@ class Color(Enum):
     BLACK = (0, 0, 0)
 
 
+class Direction(Enum):
+    LEFT = 0
+    RIGHT = 1
+
+
 class CarID(Enum):
     FERRARI = "ferrari"
     MCLAREN = "mclaren"

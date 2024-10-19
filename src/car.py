@@ -3,9 +3,7 @@ import os
 import yaml
 import numpy as np
 
-from collections import namedtuple
-
-Position = namedtuple('Position', 'x, y')
+from utils.enums import *
 
 
 def rotate_vector(vector, angle_degrees):
@@ -21,23 +19,30 @@ def rotate_vector(vector, angle_degrees):
 
 class Car:
     def __init__(self, car_id):
+        # yaml import
         with open(os.path.join('resources', 'cars.yaml'), 'r') as file:
             cars = yaml.safe_load(file)
             car_attributes = cars[car_id]
 
+        # Set values from the yaml
+        self.acceleration = car_attributes['acceleration']
+        self.braking = car_attributes['braking']
+        self.handling = car_attributes['handling']
+        self.friction = car_attributes['friction']
+        self.max_speed = car_attributes['max_speed']
+        self.max_reverse_speed = -car_attributes['max_reverse_speed']
+
+        # Set car image according to the car_id
         self.image = self._set_image(os.path.join('resources', car_id + '.png'))
+
+        # Position
+        # TODO default position
         self.x_position = 100
         self.y_position = 100
 
+        # To calculate movement
         self.velocity = 0
         self.angle = 0
-
-        self.acceleration = car_attributes['acceleration']
-        self.handling = car_attributes['handling']
-        self.friction = car_attributes['friction']
-
-        self.max_speed = car_attributes['max_speed']
-        self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
     @staticmethod
     def _set_image(path):
@@ -57,7 +62,7 @@ class Car:
         self._set_velocity(self.acceleration)
 
     def brake(self):
-        self._set_velocity(-self.acceleration)
+        self._set_velocity(-self.braking)
 
     def _set_velocity(self, acceleration):
         if self.velocity >= 0:
@@ -72,9 +77,14 @@ class Car:
         self.x_position += direction[0]
         self.y_position += direction[1]
 
-    def rotate(self, angle):
-        self.angle += angle
+    # FIXME
+    def turn(self, direction):
+        direction_multiplier = 1 if direction == Direction.RIGHT else -1
+        angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
+
+        self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
+        print(angle)
 
     def draw(self, display):
         self.move()
