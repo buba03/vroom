@@ -1,9 +1,9 @@
 import pygame
 import os
-import yaml
 import numpy as np
 
 from utils.enums import *
+from utils.yaml_manager import YamlManager
 
 
 def rotate_vector(vector, angle_degrees):
@@ -20,9 +20,7 @@ def rotate_vector(vector, angle_degrees):
 class Car:
     def __init__(self, car_id):
         # yaml import
-        with open(os.path.join('resources', 'cars.yaml'), 'r') as file:
-            cars = yaml.safe_load(file)
-            car_attributes = cars[car_id]
+        car_attributes = YamlManager(os.path.join('resources', 'cars.yaml')).get_car_attributes(car_id)
 
         # Set values from the yaml
         self.acceleration = car_attributes['acceleration']
@@ -80,8 +78,8 @@ class Car:
     # FIXME
     def turn(self, direction):
         direction_multiplier = 1 if direction == Direction.RIGHT else -1
-        angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
-
+        # angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
+        angle = self.handling
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
         print(angle)
