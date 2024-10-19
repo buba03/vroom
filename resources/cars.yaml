@@ -1,14 +1,14 @@
 min_values:
   acceleration: 0.01
   braking: 0.005
-  handling: 10
+  handling: 0.01
   max_speed: 3
   max_reverse_speed: 1.5
   friction: 0
 max_values:
   acceleration: 1
   braking: 0.5
-  handling: 10
+  handling: 4
   max_speed: 20
   max_reverse_speed: 10
   friction: 0.3

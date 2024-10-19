@@ -87,9 +87,23 @@ class Car:
         # Change multiplier based in Velocity
         direction_multiplier = -direction_multiplier if self.velocity < 0 else direction_multiplier
 
-        # angle = min(self.handling, self.handling * (1 / (abs(self.velocity - (self.max_speed / 3)))))
+        # Slow movement speed -> slow turning speed
+        angle = self.handling * abs(self.velocity)
 
-        angle = self.handling
+        # Normalizing handling if getting faster
+        min_threshold = 4
+        max_threshold = self.max_speed
+        # Normalize between 0 and 1
+        normalized_velocity = 1 - (abs(self.velocity) - min_threshold) / (max_threshold - min_threshold)
+        # Narrow down normalization
+        min_narrowing_threshold = 0.75
+        max_narrowing_threshold = 0.95
+        normalized_velocity = min_narrowing_threshold + normalized_velocity * (max_narrowing_threshold - min_narrowing_threshold)
+
+        # Change turning angle if getting faster
+        angle = min_threshold * self.handling * normalized_velocity if abs(self.velocity) > min_threshold else angle
+
+        # Apply new angle
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
         print(angle)
@@ -102,4 +116,4 @@ class Car:
         display.blit(rotated_image, rotated_rect)
 
         # Hit-box
-        pygame.draw.rect(display, (0, 255, 0), rotated_rect, 2)
+        # pygame.draw.rect(display, (0, 255, 0), rotated_rect, 2)
