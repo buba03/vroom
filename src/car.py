@@ -1,12 +1,22 @@
-import pygame
+""" Module for a realistic car implementation. """
+
 import os
+import pygame
 import numpy as np
 
-from utils.enums import *
+from utils.enums import Direction
 from utils.yaml_manager import YamlManager
 
 
-def rotate_vector(vector, angle_degrees):
+def rotate_vector(vector, angle_degrees: float):
+    """
+    Rotates a vector based on an angle.
+
+    :param vector: array_like, x and y values
+    :param angle_degrees: rotation angle in degrees
+    :return: rotated vector
+    """
+
     angle_degrees = -angle_degrees
     angle_radians = np.radians(angle_degrees)
     rotation_matrix = np.array([
@@ -18,7 +28,15 @@ def rotate_vector(vector, angle_degrees):
 
 
 class Car:
-    def __init__(self, car_id):
+    """ Represents a controllable car. """
+
+    def __init__(self, car_id: str):
+        """
+        Sets up the car object according to the car_id.
+
+        :param car_id: The name of the inside the cars.yaml file.
+        """
+
         # yaml import
         car_attributes = YamlManager(os.path.join('resources', 'cars.yaml')).get_car_attributes(car_id)
 
@@ -43,32 +61,52 @@ class Car:
         self.angle = 0
 
     @staticmethod
-    def _set_image(path):
+    def _set_image(path: str):
+        """
+        Load an image and scale it.
+
+        :param path: Path to the image.
+        :return: The image.
+        """
         img = pygame.image.load(path)
+        # TODO better scaling
         return pygame.transform.scale(img, (16 * 4, 8 * 4))
 
-    def get_position(self):
+    def get_position(self) -> tuple[float, float]:
+        """ The center position of the car. """
         return self.x_position, self.y_position
 
-    def _set_position(self, x=None, y=None):
+    def _set_position(self, x: float = None, y: float = None):
+        """ Set the center position of the car. """
         if x is not None:
             self.x_position = x
         if y is not None:
             self.y_position = y
 
     def accelerate(self):
+        """ Accelerate the car. Uses the car's acceleration attribute. """
         self._set_velocity(self.acceleration)
 
     def brake(self):
+        """ Slow down or reverse the car. Uses the car's braking attribute. """
         self._set_velocity(-self.braking)
 
-    def _set_velocity(self, acceleration):
+    def _set_velocity(self, acceleration: float):
+        """
+        Set the velocity of the car.
+
+        :param acceleration: The acceleration of the car. | Positive: speed up | Negative: slow down / reverse
+        """
         if self.velocity >= 0:
             self.velocity = min(self.velocity+acceleration, self.max_speed)
         elif self.velocity < 0:
             self.velocity = max(self.velocity+acceleration, self.max_reverse_speed)
 
     def move(self):
+        """
+        Move the car based on the current velocity and angle of the car. Applies friction.
+        Uses the car's friction attribute.
+        """
         # Change friction multiplier based on velocity
         friction_multiplier = -1 if self.velocity < 0 else 1
         # Apply friction
@@ -80,8 +118,14 @@ class Car:
         self.x_position += direction[0]
         self.y_position += direction[1]
 
-    # FIXME
-    def turn(self, direction):
+    def turn(self, direction: Direction):
+        """
+        Turn the car based on its velocity and handling.
+        Calculates the direction based on the forward or backward movement.
+        Uses the car's handling attribute.
+
+        :param direction: The direction of the turn.
+        """
         # Change multiplier based on Right - Left
         direction_multiplier = -1 if direction == Direction.RIGHT else 1
         # Change multiplier based in Velocity
@@ -106,9 +150,13 @@ class Car:
         # Apply new angle
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
-        print(angle)
 
     def draw(self, display):
+        """
+        Draws the car on the given surface.
+
+        :param display: The surface the car should be displayed on.
+        """
         # Draw car based on rotation
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         rotated_rect = rotated_image.get_rect(center=(self.x_position, self.y_position))

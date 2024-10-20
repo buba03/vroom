@@ -34,7 +34,14 @@ pip install matplotlib ipython
 pip install pyyaml
 ```
 
-To deactivate the environment, run:
+#### Explanation:
+
+* `pygame`: visualization, player controls
+* `torch`, `torchvision`: machine learning
+* `matplotlib` `ipython`: plots
+* `pyyaml`: yaml imports
+
+To deactivate the environment:
 ```shell
 deactivate
 ```
@@ -59,7 +66,7 @@ Add your image (png) to the `resources` folder.
 
 ### yaml
 
-Add the car and its attributes to the `cars.yaml` file in the `reasources` folder.
+Add the car and its attributes to the `cars.yaml` file in the `reasources` folder. The values are percentage based.
 
 #### Format:
 
@@ -84,6 +91,5 @@ Go to the `src/utils/enums.py` file and add a new value according to your `car_i
 When creating a new car, you can use the enumerator.
 
 #### Example: `example_car = Car(CarID.EXAMPLE.value)`
-
 
 **NOTE**: Import the enums to access the cars: `from utils.enums import CarID`.
