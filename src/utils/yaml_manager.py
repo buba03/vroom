@@ -2,8 +2,6 @@
 
 import yaml
 
-from src.utils.enums import CarID
-
 
 class YamlManager:
     """ Class for yaml management. """
@@ -27,7 +25,7 @@ class YamlManager:
         with open(path, 'r', encoding="utf-8") as file:
             return yaml.safe_load(file)
 
-    def get_car_attributes(self, car_id: CarID) -> dict:
+    def get_car_attributes(self, car_id: str) -> dict:
         """
         Gets the car's attributes. Calculates the percentage based values.
 
@@ -44,3 +42,7 @@ class YamlManager:
             normalized_attributes[attribute] = (max_value - min_value) * (value / 100) + min_value
 
         return normalized_attributes
+
+    def get_track_attributes(self, track_id: str) -> dict:
+        # TODO docs
+        return self.values[track_id]

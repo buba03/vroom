@@ -1,0 +1,12 @@
+oval:
+  size: 1
+  car_default_state:
+    x_position: 810
+    y_position: 280
+    angle: 90
+simple:
+  size: 0.75
+  car_default_state:
+    x_position: 600
+    y_position: 550
+    angle: 0

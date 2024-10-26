@@ -5,7 +5,8 @@ import pygame
 # import numpy as np
 
 from car import Car
-from utils.enums import Direction, Color, CarID
+from track import Track
+from utils.enums import Direction, Color, CarID, TrackID
 
 # Initialize pygame
 pygame.init()
@@ -30,6 +31,8 @@ class Game:
 
         # Car
         self.car = Car(CarID.FERRARI.value)
+        # Track
+        self.track = Track(TrackID.SIMPLE.value)
 
         # init display
         self.display = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -41,9 +44,8 @@ class Game:
 
     def reset(self):
         """ Sets up the default game, resets the game state. """
-
-        # TODO implementation
-        pass
+        x, y, angle = self.track.get_car_default_state()
+        self.car.reset(x, y, angle)
 
     def play_step(self, action) -> tuple[float, bool, float]:
         """
@@ -54,8 +56,11 @@ class Game:
         """
         # TODO: reward, game_over, score system
         reward = 0
-        game_over = False
+        game_over = self._check_collision()
         score = 0
+
+        if game_over:
+            self.reset()
 
         if action == 1:
             self.car.accelerate()
@@ -97,10 +102,12 @@ class Game:
         """ Update the display. """
 
         # Background
-        self.display.fill(Color.BLACK.value)
+        self.display.fill(Color.GRASS.value)
 
         # Items
+        self.track.draw(self.display)
         self.car.draw(self.display)
+        # self.display.blit(pygame.mask.from_surface(pygame.transform.rotate(self.car.image, self.car.angle)).to_surface(), (self.car.x_position, self.car.y_position))
 
         # Text
         text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
@@ -112,6 +119,15 @@ class Game:
 
         # Update
         pygame.display.flip()
+
+    def _check_collision(self) -> bool:
+        # FIXME
+        # TODO docs
+        # TODO returns true only when completely left the track, should return true when touched the side of the track ?
+        car_mask = pygame.mask.from_surface(self.car.image)
+        track_mask = pygame.mask.from_surface(self.track.image)
+
+        return not bool(car_mask.overlap(track_mask, (0-self.car.x_position, 0-self.car.y_position)))
 
 
 # When ran as main, the game will use player inputs.

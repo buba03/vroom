@@ -14,12 +14,12 @@ max_values:
   friction: 0.3
 
 ferrari:
-  acceleration: 60
-  braking: 60
-  handling: 60
-  max_speed: 60
-  max_reverse_speed: 60
-  friction: 50
+  acceleration: 30
+  braking: 40
+  handling: 30
+  max_speed: 70
+  max_reverse_speed: 40
+  friction: 30
 mclaren:
   acceleration: 60
   braking: 60

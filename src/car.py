@@ -49,12 +49,11 @@ class Car:
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
         # Set car image according to the car_id
-        self.image = self._set_image(os.path.join('resources', car_id + '.png'))
+        self.image = self._set_image(os.path.join('resources', 'cars', car_id + '.png'))
 
         # Position
-        # TODO default position
-        self.x_position = 100
-        self.y_position = 100
+        self.x_position = None
+        self.y_position = None
 
         # To calculate movement
         self.velocity = 0
@@ -72,8 +71,8 @@ class Car:
         # TODO better scaling
         return pygame.transform.scale(img, (16 * 4, 8 * 4))
 
-    def get_position(self) -> tuple[float, float]:
-        """ The center position of the car. """
+    def get_topleft(self) -> tuple[float, float]:
+        """ The top left position of the car. """
         return self.x_position, self.y_position
 
     def _set_position(self, x: float = None, y: float = None):
@@ -151,17 +150,24 @@ class Car:
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
 
-    def draw(self, display):
+    def draw(self, surface):
         """
         Draws the car on the given surface.
 
-        :param display: The surface the car should be displayed on.
+        :param surface: The surface the car should be displayed on.
         """
         # Draw car based on rotation
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         rotated_rect = rotated_image.get_rect(center=(self.x_position, self.y_position))
         # Draw
-        display.blit(rotated_image, rotated_rect)
+        surface.blit(rotated_image, rotated_rect)
 
         # Hit-box
-        # pygame.draw.rect(display, (0, 255, 0), rotated_rect, 2)
+        # pygame.draw.rect(surface, (0, 255, 0), rotated_rect, 2)
+
+    def reset(self, x, y, angle):
+        # TODO docs
+        self.x_position = x
+        self.y_position = y
+        self.angle = angle
+        self.velocity = 0

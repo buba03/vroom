@@ -11,6 +11,7 @@ class Color(Enum):
     WHITE = (255, 255, 255)
     RED = (200, 0, 0)
     BLACK = (0, 0, 0)
+    GRASS = (20, 130, 30)
 
 
 class Direction(Enum):
@@ -25,8 +26,17 @@ class Direction(Enum):
 
 class CarID(Enum):
     """
-    Enumeration car_ids.
+    Enumeration for car_ids.
     When using .value, returns the str necessary to identify the car.
     """
     FERRARI = "ferrari"
     MCLAREN = "mclaren"
+
+
+class TrackID(Enum):
+    """
+    Enumeration for track_ids.
+    When using .value, returns the str necessary to identify the track.
+    """
+    OVAL = "oval"
+    SIMPLE = "simple"
