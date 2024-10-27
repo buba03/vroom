@@ -44,12 +44,27 @@ class YamlManager:
         return normalized_attributes
 
     def get_track_attributes(self, track_id: str) -> dict:
-        # TODO docs
+        """
+        Gets the track's attributes.
+
+        :param track_id: The ID of the track to get the attributes for.
+        :return: The track's attributes as a dictionary.
+        """
         return self.values[track_id]
 
-    def get_display_attributes(self) -> dict:
-        # TODO docs
-        return self.values['display']
+    def get_game_attributes(self) -> tuple[int, dict]:
+        """
+        Gets the game's attributes.
+
+        :return: The game's attributes as a tuple.
+        """
+        return self.values['fps'], self.values['display']
 
     def get_car_size_from_track(self, track_id: str) -> int:
+        """
+        Gets the car's size for the current track.
+
+        :param track_id: The ID of the track.
+        :return: The car's recommended size for the current track.
+        """
         return self.values[track_id]['size']

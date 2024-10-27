@@ -14,7 +14,6 @@ from utils.yaml_manager import YamlManager
 pygame.init()
 # Constants
 FONT = pygame.font.SysFont('arial', 25)
-FPS = 30
 
 
 class Game:
@@ -28,10 +27,12 @@ class Game:
         :param track: The name of the track inside the tracks.yaml file.
         """
         # yaml import
-        display_attributes = YamlManager(os.path.join('resources', 'game.yaml')).get_display_attributes()
+        fps, display_attributes = YamlManager(os.path.join('resources', 'game.yaml')).get_game_attributes()
         # Display
         self.display_width = display_attributes['width']
         self.display_height = display_attributes['height']
+        # FPS
+        self.fps = fps
 
         # Car
         self.car = Car(car)
@@ -101,7 +102,8 @@ class Game:
         # TODO: move before or after action ?
         self.car.move()
         self._update_display()
-        self.clock.tick(FPS)
+        self.clock.tick(self.fps)
+        # print(self.clock.get_fps())
         return reward, game_over, score
 
     def _update_display(self):
@@ -127,8 +129,12 @@ class Game:
         pygame.display.flip()
 
     def _check_collision(self) -> bool:
+        """
+        Checks whether the track and the car has collided.
+
+        :return: True if the car has completely left the track, False otherwise.
+        """
         # FIXME
-        # TODO docs
         # TODO returns true only when completely left the track, should return true when touched the side of the track ?
         car_mask = pygame.mask.from_surface(self.car.image)
         track_mask = pygame.mask.from_surface(self.track.image)

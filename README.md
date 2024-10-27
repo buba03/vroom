@@ -2,7 +2,7 @@
 
 * python: `3.11.4`
 * pip: `24.0`
-* ...
+* Windows 10 or above
 
 # Setup
 
@@ -12,7 +12,7 @@ Navigate to the project's root.
 
 Install `virtualenv`:
 ```shell
-?????
+pip install virtualenv
 ```
 
 Create a virtual environment:
@@ -22,7 +22,7 @@ virtualenv .venv
 
 Activate the environment:
 ```shell
-.venv\Scripts\activate
+.venv/Scripts/activate
 ```
 
 ### Install dependencies
@@ -46,6 +46,14 @@ To deactivate the environment:
 deactivate
 ```
 
+# Run
+
+Activate the `.venv` and run the following command from the project's root:
+
+```shell
+python src/game.py
+```
+
 # Features
 
 lorem ipsum
@@ -56,7 +64,7 @@ To add a new car, follow these steps:
 
 ### Image
 
-Add your image (png) to the `resources\cars` folder.
+Add your image (png) to the `resources/cars` folder.
 
 * recommended size: ~80x40 pixels.
 
@@ -66,7 +74,13 @@ Add your image (png) to the `resources\cars` folder.
 
 ### yaml
 
-Add the car and its attributes to the `cars.yaml` file in the `resources` folder. The values are percentage based.
+Add the car and its attributes to the `cars.yaml` file in the `resources` folder.
+
+The values are percentage based (between the `min_values` and `max_values`).
+
+* `0` will set it according to the `min_values`.
+* `100` will set it according to the `max_values`.
+* anything outside this range may give unrealistic or unexpected behaviour.
 
 #### Format:
 
@@ -101,7 +115,7 @@ To add a new track, follow these steps:
 
 ### Image
 
-Add your image (png) to the `resources\tracks` folder.
+Add your image (png) to the `resources/tracks` folder.
 
 * recommended size: tha same as the game window (see `game.yaml` in the `resources` folder).
 
@@ -124,7 +138,7 @@ Add the track and its attributes to the `tracks.yaml` file in the `resources` fo
 
 Fill the values inside the `<>` brackets.
 
-* `size`: the size multiplier of the car. Changes the size of the image, and the attributes as well accordingly.
+* `size`: the size multiplier of the car. Changes the size of the image, and the attributes accordingly.
   * default: `1`
 * `car_default_state`: the default position of the car when the game is reset.
 
@@ -140,4 +154,8 @@ When creating a new track, you can use the enumerator.
 
 #### Example: `example_track = Track(TrackID.EXAMPLE.value)`
 
-**NOTE**: Import the enums to access the cars: `from utils.enums import TrackID`.
+**NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
+
+## Tests
+
+

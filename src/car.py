@@ -41,6 +41,14 @@ def set_image(path: str, new_width=60):
 
 
 def scale_image(img, new_width: int = None, new_height: int = None):
+    """
+    Scale an image to the given size. If a width or a height is not provided, keeps the aspect ratio.
+
+    :param img: The image to be scaled.
+    :param new_width: The new width of the image.
+    :param new_height: The new height of the image.
+    :return: The scaled image.
+    """
     width, height = img.get_size()
     aspect_ratio = height / width
 
@@ -87,6 +95,11 @@ class Car:
         self.angle = 0
 
     def resize(self, multiplier: int):
+        """
+        Resizes the car's image according to the given multiplier. Changes the car's attributes as well.
+
+        :param multiplier: The multiplier of the resize.
+        """
         # Size
         new_width, _ = self.image.get_size()
         self.image = scale_image(self.image, new_width=(new_width*multiplier))
@@ -193,7 +206,13 @@ class Car:
         # pygame.draw.rect(surface, (0, 255, 0), rotated_rect, 2)
 
     def reset(self, x, y, angle):
-        # TODO docs
+        """
+        Resets the car to the given position and angle. Resets velocity.
+
+        :param x: x position of the car
+        :param y: y position of the car
+        :param angle: angle of the car
+        """
         self.x_position = x
         self.y_position = y
         self.angle = angle
