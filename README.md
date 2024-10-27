@@ -56,17 +56,17 @@ To add a new car, follow these steps:
 
 ### Image
 
-Add your image (png) to the `resources` folder.
+Add your image (png) to the `resources\cars` folder.
 
 * recommended size: ~80x40 pixels.
 
 **NOTE**: The image of the car must be facing to the right.
 
-**NOTE**: The name of the image will be used as the `car_id` in the following steps..
+**NOTE**: The name of the image will be used as the `car_id` in the following steps.
 
 ### yaml
 
-Add the car and its attributes to the `cars.yaml` file in the `reasources` folder. The values are percentage based.
+Add the car and its attributes to the `cars.yaml` file in the `resources` folder. The values are percentage based.
 
 #### Format:
 
@@ -78,7 +78,8 @@ Add the car and its attributes to the `cars.yaml` file in the `reasources` folde
   max_reverse_speed: <num>
   friction: <num>
 ```
- Fill the values inside the `<>` brackets.
+
+Fill the values inside the `<>` brackets.
 
 ### Enum
 
@@ -93,3 +94,50 @@ When creating a new car, you can use the enumerator.
 #### Example: `example_car = Car(CarID.EXAMPLE.value)`
 
 **NOTE**: Import the enums to access the cars: `from utils.enums import CarID`.
+
+## New track
+
+To add a new track, follow these steps:
+
+### Image
+
+Add your image (png) to the `resources\tracks` folder.
+
+* recommended size: tha same as the game window (see `game.yaml` in the `resources` folder).
+
+**NOTE**: The name of the image will be used as the `track_id` in the following steps.
+
+### yaml
+
+Add the track and its attributes to the `tracks.yaml` file in the `resources` folder.
+
+#### Format:
+
+```yaml
+<track_id>:
+  size: <num>
+  car_default_state:
+    x_position: <num>
+    y_position: <num>
+    angle: <num>
+```
+
+Fill the values inside the `<>` brackets.
+
+* `size`: the size multiplier of the car. Changes the size of the image, and the attributes as well accordingly.
+  * default: `1`
+* `car_default_state`: the default position of the car when the game is reset.
+
+### Enum
+
+Go to the `src/utils/enums.py` file and add a new value according to your `track_id`.
+
+#### Format: `EXAMPLE = "track_id"`
+
+### Usage
+
+When creating a new track, you can use the enumerator.
+
+#### Example: `example_track = Track(TrackID.EXAMPLE.value)`
+
+**NOTE**: Import the enums to access the cars: `from utils.enums import TrackID`.
