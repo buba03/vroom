@@ -32,5 +32,5 @@ f1:
   braking: 40
   handling: 30
   max_speed: 70
-  max_reverse_speed: 40
+  max_reverse_speed: 10
   friction: 30

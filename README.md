@@ -158,4 +158,8 @@ When creating a new track, you can use the enumerator.
 
 ## Tests
 
+### Static Code Analysis
 
+```shell
+pylint src
+```

@@ -7,6 +7,8 @@ import numpy as np
 from utils.enums import Direction
 from utils.yaml_manager import YamlManager
 
+HANDLING_THRESHOLD = 4
+
 
 def rotate_vector(vector, angle_degrees: float):
     """
@@ -100,16 +102,21 @@ class Car:
 
         :param multiplier: The multiplier of the resize.
         """
+        global HANDLING_THRESHOLD
+
         # Size
         new_width, _ = self.image.get_size()
         self.image = scale_image(self.image, new_width=(new_width*multiplier))
+
         # Attributes
-        self.acceleration *= multiplier
-        self.braking *= multiplier
-        self.handling /= multiplier
-        self.friction *= multiplier
-        self.max_speed *= multiplier
-        self.max_reverse_speed *= multiplier
+        self.acceleration *= multiplier*multiplier
+        self.braking *= multiplier*multiplier
+        # self.handling /= multiplier
+        self.friction *= multiplier*multiplier
+        self.max_speed *= multiplier*multiplier
+        self.max_reverse_speed *= multiplier*multiplier
+
+        HANDLING_THRESHOLD *= multiplier
 
     def get_center_position(self) -> tuple[float, float]:
         """ The top left position of the car. """
@@ -165,6 +172,8 @@ class Car:
 
         :param direction: The direction of the turn.
         """
+        global HANDLING_THRESHOLD
+
         # Change multiplier based on Right - Left
         direction_multiplier = -1 if direction == Direction.RIGHT else 1
         # Change multiplier based in Velocity
@@ -174,7 +183,7 @@ class Car:
         angle = self.handling * abs(self.velocity)
 
         # Normalizing handling if getting faster
-        min_threshold = 4
+        min_threshold = HANDLING_THRESHOLD
         max_threshold = self.max_speed
         # Normalize between 0 and 1
         normalized_velocity = 1 - (abs(self.velocity) - min_threshold) / (max_threshold - min_threshold)

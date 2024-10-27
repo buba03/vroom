@@ -124,6 +124,8 @@ class Game:
         self.display.blit(text, [0, 30])
         text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True, Color.WHITE.value)
         self.display.blit(text, [0, 60])
+        text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 90])
 
         # Update
         pygame.display.flip()
@@ -145,7 +147,7 @@ class Game:
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game(CarID.FERRARI.value, TrackID.SIMPLE.value)
+    game = Game(CarID.F1.value, TrackID.SIMPLE.value)
 
     # Game loop
     while True:
