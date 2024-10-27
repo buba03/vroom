@@ -27,3 +27,10 @@ mclaren:
   max_speed: 65
   max_reverse_speed: 60
   friction: 50
+f1:
+  acceleration: 30
+  braking: 40
+  handling: 30
+  max_speed: 70
+  max_reverse_speed: 40
+  friction: 30

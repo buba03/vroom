@@ -29,8 +29,9 @@ class CarID(Enum):
     Enumeration for car_ids.
     When using .value, returns the str necessary to identify the car.
     """
-    FERRARI = "ferrari"
-    MCLAREN = "mclaren"
+    FERRARI = 'ferrari'
+    MCLAREN = 'mclaren'
+    F1 = 'f1'
 
 
 class TrackID(Enum):
@@ -38,5 +39,5 @@ class TrackID(Enum):
     Enumeration for track_ids.
     When using .value, returns the str necessary to identify the track.
     """
-    OVAL = "oval"
-    SIMPLE = "simple"
+    OVAL = 'oval'
+    SIMPLE = 'simple'

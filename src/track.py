@@ -6,6 +6,9 @@ from utils.yaml_manager import YamlManager
 
 class Track:
     def __init__(self, track_id):
+        # Set ID
+        self.id = track_id
+
         # Set car image according to the car_id
         self.image = self._set_image(os.path.join('resources', 'tracks', track_id + '.png'))
 

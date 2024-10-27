@@ -1,5 +1,6 @@
 """ Module for game logic. When ran as main, the game will use the player controls. """
 
+import os
 import pygame
 # import random
 # import numpy as np
@@ -7,6 +8,7 @@ import pygame
 from car import Car
 from track import Track
 from utils.enums import Direction, Color, CarID, TrackID
+from utils.yaml_manager import YamlManager
 
 # Initialize pygame
 pygame.init()
@@ -18,28 +20,32 @@ FPS = 30
 class Game:
     """ Class for game logic. """
 
-    def __init__(self, screen_width: int = 900, screen_height: int = 600):
+    def __init__(self, car: str = CarID.FERRARI.value, track: str = TrackID.SIMPLE.value):
         """
         Sets up the game.
 
-        :param screen_width:
-        :param screen_height:
+        :param car: The name of the car inside the cars.yaml file.
+        :param track: The name of the track inside the tracks.yaml file.
         """
-        # Screen
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+        # yaml import
+        display_attributes = YamlManager(os.path.join('resources', 'game.yaml')).get_display_attributes()
+        # Display
+        self.display_width = display_attributes['width']
+        self.display_height = display_attributes['height']
 
         # Car
-        self.car = Car(CarID.FERRARI.value)
+        self.car = Car(car)
         # Track
-        self.track = Track(TrackID.SIMPLE.value)
+        self.track = Track(track)
 
         # init display
-        self.display = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.display = pygame.display.set_mode((self.display_width, self.display_height))
         pygame.display.set_caption('Vroom v1.0.0')
         # Clock
         self.clock = pygame.time.Clock()
         # Set up elements
+        size = YamlManager(os.path.join('resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
+        self.car.resize(size)
         self.reset()
 
     def reset(self):
@@ -133,7 +139,7 @@ class Game:
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game()
+    game = Game(CarID.FERRARI.value, TrackID.SIMPLE.value)
 
     # Game loop
     while True:

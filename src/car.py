@@ -27,6 +27,31 @@ def rotate_vector(vector, angle_degrees: float):
     return np.round(result, decimals=10)
 
 
+def set_image(path: str, new_width=60):
+    """
+    Load an image and scale it based on the length of it. Keeps the aspect ratio.
+
+    :param path: Path to the image.
+    :param new_width: The length of the car.
+    :return: The image.
+    """
+    img = pygame.image.load(path)
+
+    return scale_image(img, new_width=new_width)
+
+
+def scale_image(img, new_width: int = None, new_height: int = None):
+    width, height = img.get_size()
+    aspect_ratio = height / width
+
+    if new_height is None:
+        new_height = int(new_width * aspect_ratio)
+    if new_width is None:
+        new_width = int(new_height / aspect_ratio)
+
+    return pygame.transform.scale(img, (new_width, new_height))
+
+
 class Car:
     """ Represents a controllable car. """
 
@@ -34,8 +59,10 @@ class Car:
         """
         Sets up the car object according to the car_id.
 
-        :param car_id: The name of the inside the cars.yaml file.
+        :param car_id: The name of the car inside the cars.yaml file.
         """
+        # Set ID
+        self.id = car_id
 
         # yaml import
         car_attributes = YamlManager(os.path.join('resources', 'cars.yaml')).get_car_attributes(car_id)
@@ -49,7 +76,7 @@ class Car:
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
         # Set car image according to the car_id
-        self.image = self._set_image(os.path.join('resources', 'cars', car_id + '.png'))
+        self.image = set_image(os.path.join('resources', 'cars', car_id + '.png'))
 
         # Position
         self.x_position = None
@@ -59,19 +86,19 @@ class Car:
         self.velocity = 0
         self.angle = 0
 
-    @staticmethod
-    def _set_image(path: str):
-        """
-        Load an image and scale it.
+    def resize(self, multiplier: int):
+        # Size
+        new_width, _ = self.image.get_size()
+        self.image = scale_image(self.image, new_width=(new_width*multiplier))
+        # Attributes
+        self.acceleration *= multiplier
+        self.braking *= multiplier
+        self.handling /= multiplier
+        self.friction *= multiplier
+        self.max_speed *= multiplier
+        self.max_reverse_speed *= multiplier
 
-        :param path: Path to the image.
-        :return: The image.
-        """
-        img = pygame.image.load(path)
-        # TODO better scaling
-        return pygame.transform.scale(img, (16 * 4, 8 * 4))
-
-    def get_topleft(self) -> tuple[float, float]:
+    def get_center_position(self) -> tuple[float, float]:
         """ The top left position of the car. """
         return self.x_position, self.y_position
 

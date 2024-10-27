@@ -46,3 +46,10 @@ class YamlManager:
     def get_track_attributes(self, track_id: str) -> dict:
         # TODO docs
         return self.values[track_id]
+
+    def get_display_attributes(self) -> dict:
+        # TODO docs
+        return self.values['display']
+
+    def get_car_size_from_track(self, track_id: str) -> int:
+        return self.values[track_id]['size']
