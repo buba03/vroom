@@ -63,7 +63,7 @@ class Game:
         """
         # TODO: reward, game_over, score system
         reward = 0
-        game_over = self._check_collision()
+        game_over = self._car_offtrack()
         score = 0
 
         if game_over:
@@ -115,7 +115,6 @@ class Game:
         # Items
         self.track.draw(self.display)
         self.car.draw(self.display)
-        # self.display.blit(pygame.mask.from_surface(pygame.transform.rotate(self.car.image, self.car.angle)).to_surface(), (self.car.x_position, self.car.y_position))
 
         # Text
         text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
@@ -130,18 +129,21 @@ class Game:
         # Update
         pygame.display.flip()
 
-    def _check_collision(self) -> bool:
+    def _car_offtrack(self) -> bool:
         """
         Checks whether the track and the car has collided.
 
         :return: True if the car has completely left the track, False otherwise.
         """
-        # FIXME
-        # TODO returns true only when completely left the track, should return true when touched the side of the track ?
-        car_mask = pygame.mask.from_surface(self.car.image)
+        # TODO maybe only check car's middle point ? (can make shortcuts with the mask version)
+        rotated_image = pygame.transform.rotate(self.car.image, self.car.angle)
+
+        car_mask = pygame.mask.from_surface(rotated_image)
         track_mask = pygame.mask.from_surface(self.track.image)
 
-        return not bool(car_mask.overlap(track_mask, (0-self.car.x_position, 0-self.car.y_position)))
+        rotated_rect = rotated_image.get_rect(center=(self.car.x_position, self.car.y_position))
+
+        return not bool(car_mask.overlap(track_mask, (0-rotated_rect.topleft[0], 0-rotated_rect.topleft[1])))
 
 
 # When ran as main, the game will use player inputs.
