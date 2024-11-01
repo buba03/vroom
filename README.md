@@ -1,19 +1,14 @@
 # Prerequisites
 
-* python: `3.11.4`
-* pip: `24.0`
-* Windows 10 or above
+* Python **3.11.4**
+  * `virtualenv` python package
+    * to install, run: `pip install virtualenv`
+* pip **24.0**
+* **Windows 10** or above
 
 # Setup
 
-Navigate to the project's root.
-
-## Virtual environment
-
-Install `virtualenv`:
-```shell
-pip install virtualenv
-```
+Navigate to the **project's root**.
 
 Create a virtual environment:
 ```shell
@@ -48,7 +43,7 @@ deactivate
 
 # Run
 
-Activate the `.venv` and run the following command from the project's root:
+Activate the `.venv` and run the following command from the **project's root**:
 
 ```shell
 python src/game.py
@@ -60,7 +55,7 @@ lorem ipsum
 
 ## New car
 
-To add a new car, follow these steps:
+To add a **new car**, follow these steps:
 
 ### Image
 
@@ -68,9 +63,9 @@ Add your image (png) to the `resources/cars` folder.
 
 * recommended size: ~80x40 pixels.
 
-**NOTE**: The image of the car must be facing to the right.
+> **NOTE**: The image of the car must be facing to the right.
 
-**NOTE**: The name of the image will be used as the `car_id` in the following steps.
+> **NOTE**: The name of the image will be used as the `car_id` in the following steps.
 
 ### yaml
 
@@ -107,19 +102,19 @@ When creating a new car, you can use the enumerator.
 
 #### Example: `example_car = Car(CarID.EXAMPLE.value)`
 
-**NOTE**: Import the enums to access the cars: `from utils.enums import CarID`.
+> **NOTE**: Import the enums to access the cars: `from utils.enums import CarID`.
 
 ## New track
 
-To add a new track, follow these steps:
+To add a **new track**, follow these steps:
 
 ### Image
 
 Add your image (png) to the `resources/tracks` folder.
 
-* recommended size: tha same as the game window (see `game.yaml` in the `resources` folder).
+* recommended size: the same as the game window (see `game.yaml` in the `resources` folder).
 
-**NOTE**: The name of the image will be used as the `track_id` in the following steps.
+> **NOTE**: The name of the image will be used as the `track_id` in the following steps.
 
 ### yaml
 
@@ -134,6 +129,14 @@ Add the track and its attributes to the `tracks.yaml` file in the `resources` fo
     x_position: <num>
     y_position: <num>
     angle: <num>
+  checkpoints:
+    0:
+      x: <num>
+      y: <num>
+    1:
+      x: <num>
+      y: <num>
+#   ...
 ```
 
 Fill the values inside the `<>` brackets.
@@ -141,6 +144,7 @@ Fill the values inside the `<>` brackets.
 * `size`: the size multiplier of the car. Changes the size of the image, and the attributes accordingly.
   * default: `1`
 * `car_default_state`: the default position of the car when the game is reset.
+* `checkpoints`: at least 2 checkpoints are required
 
 ### Enum
 
@@ -154,11 +158,25 @@ When creating a new track, you can use the enumerator.
 
 #### Example: `example_track = Track(TrackID.EXAMPLE.value)`
 
-**NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
+ > **NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
 
 ## Tests
 
 ### Static Code Analysis
+
+The `pylint` python package is required.
+
+#### Install
+
+Run the following command inside the `.venv`:
+
+```shell
+pip install pylint
+```
+
+#### Run
+
+Run the following command from the project's root:
 
 ```shell
 pylint src
