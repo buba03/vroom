@@ -34,6 +34,10 @@ class Game:
         # FPS
         self.fps = fps
 
+        # For storing progress
+        self.reached_checkpoints = set()
+        self.lap_count = None
+
         # Car
         self.car = Car(car)
         # Track
@@ -45,14 +49,17 @@ class Game:
         # Clock
         self.clock = pygame.time.Clock()
         # Set up elements
-        size = YamlManager(os.path.join('resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
-        self.car.resize(size)
+        self.size = YamlManager(os.path.join('resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
+        self.car.resize(self.size)
         self.reset()
 
     def reset(self):
         """ Sets up the default game, resets the game state. """
         x, y, angle = self.track.get_car_default_state()
         self.car.reset(x, y, angle)
+
+        self.reached_checkpoints = set()
+        self.lap_count = 0
 
     def play_step(self, action) -> tuple[float, bool, float]:
         """
@@ -66,8 +73,12 @@ class Game:
         game_over = self._car_offtrack()
         score = 0
 
+        # Check game over
         if game_over:
             self.reset()
+
+        # Check progression
+        self._check_progression()
 
         if action == 1:
             self.car.accelerate()
@@ -103,7 +114,6 @@ class Game:
         self.car.move()
         self._update_display()
         self.clock.tick(self.fps)
-        # print(self.clock.get_fps())
         return reward, game_over, score
 
     def _update_display(self):
@@ -125,6 +135,10 @@ class Game:
         self.display.blit(text, [0, 60])
         text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
         self.display.blit(text, [0, 90])
+        text = FONT.render(f"Progress: {str(self.reached_checkpoints)}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 120])
+        text = FONT.render(f"Laps: {str(self.lap_count)}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 150])
 
         # Update
         pygame.display.flip()
@@ -138,18 +152,60 @@ class Game:
         # TODO maybe only check car's middle point ? (can make shortcuts with the mask version)
         rotated_image = pygame.transform.rotate(self.car.image, self.car.angle)
 
+        # Masks
         car_mask = pygame.mask.from_surface(rotated_image)
         track_mask = pygame.mask.from_surface(self.track.image)
 
+        # Calculate offset
         rotated_rect = rotated_image.get_rect(center=(self.car.x_position, self.car.y_position))
+        offset = (0-rotated_rect.topleft[0], 0-rotated_rect.topleft[1])
 
-        return not bool(car_mask.overlap(track_mask, (0-rotated_rect.topleft[0], 0-rotated_rect.topleft[1])))
+        return not bool(car_mask.overlap(track_mask, offset))
+
+    def _get_checkpoint_reached(self) -> int:
+        """
+        Checks if the car reached a new checkpoint and returns it.
+
+        :return: The index of the reached checkpoint. -1 if none is reached.
+        """
+        threshold = 100 * self.size * self.size
+
+        checkpoints = self.track.checkpoints
+        car_position = int(self.car.x_position), int(self.car.y_position)
+
+        for i, checkpoint in enumerate(checkpoints):
+            # FIXME debug
+            # pygame.draw.circle(self.display, Color.RED.value, checkpoint, threshold, width=3)
+            # pygame.draw.rect(self.display, Color.RED.value, pygame.rect.Rect(checkpoint[0] - threshold, checkpoint[1] - threshold, threshold*2, threshold*2))
+
+            # Check threshold (square)
+            if abs(checkpoint[0] - car_position[0]) < threshold and abs(checkpoint[1] - car_position[1]) < threshold:
+                return i
+
+        return -1
+
+    def _check_progression(self):
+        """ Checks the car's progression on the track. Updates reached checkpoints and lap counts. """
+
+        checkpoint = self._get_checkpoint_reached()
+        # If the car touched a checkpoint
+        if checkpoint != -1:
+            # Ignore checkpoint if the set is empty and it isn't the first checkpoint
+            if len(self.reached_checkpoints) == 0 and checkpoint != 0:
+                return
+            # Add
+            self.reached_checkpoints.add(checkpoint)
+            # Check lap progress
+            if len(self.reached_checkpoints) == 4 and checkpoint == 0:
+                # Reset if completed a lap
+                self.reached_checkpoints = set()
+                self.lap_count += 1
 
 
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game(CarID.F1.value, TrackID.SIMPLE.value)
+    game = Game(CarID.FERRARI.value, TrackID.OVAL.value)
 
     # Game loop
     while True:
@@ -158,6 +214,10 @@ if __name__ == '__main__':
 
         # Currently pressed keys
         keys = pygame.key.get_pressed()
+
+        # FIXME debug
+        # if keys[pygame.K_SPACE]:
+        #     print(pygame.mouse.get_pos())
 
         # WASD and arrow key presses to actions
         accelerate = keys[pygame.K_w] or keys[pygame.K_UP]

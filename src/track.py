@@ -18,6 +18,17 @@ def set_image(path: str):
     return pygame.transform.scale(img, (900, 600))
 
 
+def set_checkpoints(points: dict) -> list[tuple[float, float]]:
+    """
+    Make a list of the points from the dictionary in the yaml file.
+
+    :param points: The dictionary of the checkpoints from the yaml file.
+    :return: A list of tuples with the coordinates.
+    """
+
+    return [(point['x'], point['y']) for point in points.values()]
+
+
 class Track:
     """ Represents a racetrack for a car. """
 
@@ -30,15 +41,16 @@ class Track:
         # Set ID
         self.id = track_id
 
-        # Set track image according to the track_id
-        self.image = set_image(os.path.join('resources', 'tracks', track_id + '.png'))
-
         # yaml import
         track_attributes = YamlManager(os.path.join('resources', 'tracks.yaml')).get_track_attributes(track_id)
 
         # Set values from yaml
-        self.car_default_state = track_attributes['car_default_state']
         self.car_size = track_attributes['size']
+        self.car_default_state = track_attributes['car_default_state']
+        self.checkpoints = set_checkpoints(track_attributes['checkpoints'])
+
+        # Set track image according to the track_id
+        self.image = set_image(os.path.join('resources', 'tracks', track_id + '.png'))
 
     def get_car_default_state(self) -> tuple[float, float, float]:
         """
