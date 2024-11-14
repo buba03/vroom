@@ -21,7 +21,7 @@ oval:
 simple:
   size: 0.8
   car_default_state:
-    x_position: 300
+    x_position: 550
     y_position: 510
     angle: 0
   checkpoints:
