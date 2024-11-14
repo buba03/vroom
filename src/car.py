@@ -75,7 +75,7 @@ class Car:
         self.id = car_id
 
         # yaml import
-        car_attributes = YamlManager(os.path.join('resources', 'cars.yaml')).get_car_attributes(car_id)
+        car_attributes = YamlManager(os.path.join('src', 'resources', 'cars.yaml')).get_car_attributes(car_id)
 
         # Set values from the yaml
         self.acceleration = car_attributes['acceleration']
@@ -86,7 +86,7 @@ class Car:
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
         # Set car image according to the car_id
-        self.image = set_image(os.path.join('resources', 'cars', car_id + '.png'))
+        self.image = set_image(os.path.join('src', 'resources', 'cars', car_id + '.png'))
 
         # Position
         self.x_position = None

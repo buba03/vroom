@@ -28,7 +28,7 @@ class Game:
         :param track: The name of the track inside the tracks.yaml file.
         """
         # yaml import
-        fps, display_attributes = YamlManager(os.path.join('resources', 'game.yaml')).get_game_attributes()
+        fps, display_attributes = YamlManager(os.path.join('src', 'resources', 'game.yaml')).get_game_attributes()
         # Display
         self.display_width = display_attributes['width']
         self.display_height = display_attributes['height']
@@ -50,7 +50,7 @@ class Game:
         # Clock
         self.clock = pygame.time.Clock()
         # Set up elements
-        self.size = YamlManager(os.path.join('resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
+        self.size = YamlManager(os.path.join('src', 'resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
         self.car.resize(self.size)
         self.reset()
 

@@ -59,7 +59,7 @@ To add a **new car**, follow these steps:
 
 ### Image
 
-Add your image (png) to the `resources/cars` folder.
+Add your image (png) to the `src/resources/cars` folder.
 
 * recommended size: ~80x40 pixels.
 
@@ -69,7 +69,7 @@ Add your image (png) to the `resources/cars` folder.
 
 ### yaml
 
-Add the car and its attributes to the `cars.yaml` file in the `resources` folder.
+Add the car and its attributes to the `cars.yaml` file in the `src/resources` folder.
 
 The values are percentage based (between the `min_values` and `max_values`).
 
@@ -110,15 +110,15 @@ To add a **new track**, follow these steps:
 
 ### Image
 
-Add your image (png) to the `resources/tracks` folder.
+Add your image (png) to the `src/resources/tracks` folder.
 
-* recommended size: the same as the game window (see `game.yaml` in the `resources` folder).
+* recommended size: the same as the game window (see `game.yaml` in the `src/resources` folder).
 
 > **NOTE**: The name of the image will be used as the `track_id` in the following steps.
 
 ### yaml
 
-Add the track and its attributes to the `tracks.yaml` file in the `resources` folder.
+Add the track and its attributes to the `tracks.yaml` file in the `src/resources` folder.
 
 #### Format:
 

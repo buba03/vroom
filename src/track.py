@@ -42,7 +42,7 @@ class Track:
         self.id = track_id
 
         # yaml import
-        track_attributes = YamlManager(os.path.join('resources', 'tracks.yaml')).get_track_attributes(track_id)
+        track_attributes = YamlManager(os.path.join('src', 'resources', 'tracks.yaml')).get_track_attributes(track_id)
 
         # Set values from yaml
         self.car_size = track_attributes['size']
@@ -50,7 +50,7 @@ class Track:
         self.checkpoints = set_checkpoints(track_attributes['checkpoints'])
 
         # Set track image according to the track_id
-        self.image = set_image(os.path.join('resources', 'tracks', track_id + '.png'))
+        self.image = set_image(os.path.join('src', 'resources', 'tracks', track_id + '.png'))
 
     def get_car_default_state(self) -> tuple[float, float, float]:
         """
