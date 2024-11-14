@@ -12,6 +12,7 @@ class Color(Enum):
     RED = (200, 0, 0)
     BLACK = (0, 0, 0)
     GRASS = (20, 130, 30)
+    TRACK = (189, 190, 192)
 
 
 class Direction(Enum):
