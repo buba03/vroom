@@ -1,6 +1,7 @@
 """ Module for game logic. When ran as main, the game will use the player controls. """
 
 import os
+import math
 import pygame
 # import random
 # import numpy as np
@@ -72,10 +73,6 @@ class Game:
         reward = 0
         game_over = self._car_offtrack()
         score = 0
-
-        # Check game over
-        if game_over:
-            self.reset()
 
         # Check progression
         self._check_progression()
@@ -184,10 +181,25 @@ class Game:
 
         return -1
 
+    def get_next_checkpoint(self) -> int:
+        """
+        Returns the index of next checkpoint, that should be reached.
+
+        :return: The index of the checkpoint.
+        """
+        return len(self.reached_checkpoints) % len(self.track.checkpoints)
+
     def _check_progression(self):
         """ Checks the car's progression on the track. Updates reached checkpoints and lap counts. """
 
+        # Get the currently touched checkpoint
         checkpoint = self._get_checkpoint_reached()
+
+        # Check whether it's the next one
+        if checkpoint != self.get_next_checkpoint():
+            # Disallow it, if going the wrong direction
+            checkpoint = -1
+
         # If the car touched a checkpoint
         if checkpoint != -1:
             # Ignore checkpoint if the set is empty and it isn't the first checkpoint
@@ -201,11 +213,49 @@ class Game:
                 self.reached_checkpoints = set()
                 self.lap_count += 1
 
+    def _cast_ray(self, angle_offset: int = 0):
+        """
+        Casts a ray from the middle of the car in the given angle. The ray stops when it hits the side of the track.
+
+        :param angle_offset: The offset of the ray's angle. Default is 0.
+        :return: The length of the ray.
+        """
+        length = 0
+        step = 1
+        # Convert angle to radians and clockwise
+        angle = math.radians(-(self.car.angle - angle_offset))
+
+        # Calculate length, max value: display's width + height
+        while length < self.display.get_size()[0] + self.display.get_size()[1]:
+            # Gradually increase the length
+            length += step
+            # Coordinates of the end of the ray
+            x = int(self.car.x_position + length * math.cos(angle))
+            y = int(self.car.y_position + length * math.sin(angle))
+            # Check if the ray hit the side of the track
+            if self.track.image.get_at((x, y)) != Color.TRACK.value:
+                # FIXME debug
+                # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
+                return length
+
+    def get_rays(self) -> list[int]:
+        """
+        Casts all the rays and calculates their lengths.
+
+        :return: List of the calculated distances counterclockwise.
+        """
+        angles = [-90, -45, 0, 45, 90]
+        result = []
+
+        for angle in angles:
+            result.append(self._cast_ray(angle))
+
+        return result
 
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game(CarID.FERRARI.value, TrackID.OVAL.value)
+    game = Game(CarID.FERRARI.value, TrackID.SIMPLE.value)
 
     # Game loop
     while True:
@@ -246,4 +296,7 @@ if __name__ == '__main__':
             player_action = 8
 
         # Execute action, go to next state
-        game.play_step(player_action)
+        _, game_over, _ = game.play_step(player_action)
+
+        if game_over:
+            game.reset()
