@@ -1,6 +1,7 @@
 """ Module for racetrack implementation. """
 
 import os
+
 import pygame
 
 from utils.yaml_manager import YamlManager
@@ -34,7 +35,7 @@ class Track:
 
     def __init__(self, track_id):
         """
-        Sets up the track object according to the track_id.
+        Initializes the track object according to the track_id.
 
         :param track_id: The name of the track inside the tracks.yaml file.
         """

@@ -1,8 +1,9 @@
 """ Module for a realistic car implementation. """
 
 import os
-import pygame
+
 import numpy as np
+import pygame
 
 from utils.enums import Direction
 from utils.yaml_manager import YamlManager
@@ -67,7 +68,7 @@ class Car:
 
     def __init__(self, car_id: str):
         """
-        Sets up the car object according to the car_id.
+        Initializes the car object according to the car_id.
 
         :param car_id: The name of the car inside the cars.yaml file.
         """
@@ -106,15 +107,15 @@ class Car:
 
         # Size
         new_width, _ = self.image.get_size()
-        self.image = scale_image(self.image, new_width=(new_width*multiplier))
+        self.image = scale_image(self.image, new_width=(new_width * multiplier))
 
         # Attributes
-        self.acceleration *= multiplier*multiplier
-        self.braking *= multiplier*multiplier
+        self.acceleration *= multiplier * multiplier
+        self.braking *= multiplier * multiplier
         # self.handling /= multiplier
-        self.friction *= multiplier*multiplier
-        self.max_speed *= multiplier*multiplier
-        self.max_reverse_speed *= multiplier*multiplier
+        self.friction *= multiplier * multiplier
+        self.max_speed *= multiplier * multiplier
+        self.max_reverse_speed *= multiplier * multiplier
 
         HANDLING_THRESHOLD *= multiplier
 
@@ -144,9 +145,9 @@ class Car:
         :param acceleration: The acceleration of the car. | Positive: speed up | Negative: slow down / reverse
         """
         if self.velocity >= 0:
-            self.velocity = min(self.velocity+acceleration, self.max_speed)
+            self.velocity = min(self.velocity + acceleration, self.max_speed)
         elif self.velocity < 0:
-            self.velocity = max(self.velocity+acceleration, self.max_reverse_speed)
+            self.velocity = max(self.velocity + acceleration, self.max_reverse_speed)
 
     def move(self):
         """
@@ -156,7 +157,8 @@ class Car:
         # Change friction multiplier based on velocity
         friction_multiplier = -1 if self.velocity < 0 else 1
         # Apply friction
-        self.velocity = self.velocity - self.friction * friction_multiplier if not abs(self.velocity) < self.friction else 0
+        self.velocity = self.velocity - self.friction * friction_multiplier if not abs(
+            self.velocity) < self.friction else 0
 
         # Calculate movement vector based on velocity and angle
         direction = rotate_vector((self.velocity, 0), self.angle)
@@ -190,7 +192,8 @@ class Car:
         # Narrow down normalization
         min_narrowing_threshold = 0.75
         max_narrowing_threshold = 0.95
-        normalized_velocity = min_narrowing_threshold + normalized_velocity * (max_narrowing_threshold - min_narrowing_threshold)
+        normalized_velocity = min_narrowing_threshold + normalized_velocity * (
+                    max_narrowing_threshold - min_narrowing_threshold)
 
         # Change turning angle if getting faster
         angle = min_threshold * self.handling * normalized_velocity if abs(self.velocity) > min_threshold else angle

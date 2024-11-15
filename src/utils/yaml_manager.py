@@ -5,9 +5,10 @@ import yaml
 
 class YamlManager:
     """ Class for yaml management. """
+
     def __init__(self, path: str):
         """
-        Sets up the yaml manager with the given path.
+        Initializes the yaml manager with the given path.
 
         :param path: Path to the yaml file.
         """

@@ -2,11 +2,13 @@
 
 import random
 from collections import deque
-import torch
+
 import numpy as np
+import torch
 
 from game import Game
 from model import Linear_QNet, QTrainer
+
 # from helper import plot
 
 # TODO put this in a yaml
@@ -19,11 +21,11 @@ class Agent:
     """ Class for an agent to train the model by playing the game. """
 
     def __init__(self):
-        """ Sets up the agent. """
+        """ Initializes the agent. """
 
         self.number_of_games = 0
-        self.epsilon = 0    # randomness
-        self.gamma = 0.9    # discount rate (must be smaller than 1)
+        self.epsilon = 0  # randomness
+        self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
         self.model = Linear_QNet(11, 256, 9)
         # self.model.load()
@@ -95,7 +97,8 @@ class Agent:
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
 
-    def train_short_memory(self, state: np.ndarray, action: list[int], reward: float, next_state: np.ndarray, done: bool):
+    def train_short_memory(self, state: np.ndarray, action: list[int], reward: float, next_state: np.ndarray,
+                           done: bool):
         """
         Performs a single training step using the given experience.
 
@@ -122,7 +125,7 @@ class Agent:
             final_move[move] = 1
         else:
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model(state0)     # executes the model.forward function
+            prediction = self.model(state0)  # executes the model.forward function
             move = torch.argmax(prediction).item()
             final_move[move] = 1
 
@@ -150,7 +153,6 @@ def train():
 
         # get move
         final_move = agent.get_action(state_old)
-        print(final_move)
 
         # perform move and get new state
         reward, done, score = game.play_step(final_move)

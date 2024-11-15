@@ -1,15 +1,17 @@
 """ Module for game logic. When ran as main, the game will use the player controls. """
 
-import os
 import math
+import os
+
 import pygame
-# import random
-# import numpy as np
 
 from car import Car
 from track import Track
 from utils.enums import Direction, Color, CarID, TrackID
 from utils.yaml_manager import YamlManager
+
+# import random
+# import numpy as np
 
 # Initialize pygame
 pygame.init()
@@ -22,7 +24,7 @@ class Game:
 
     def __init__(self, car: str = CarID.FERRARI.value, track: str = TrackID.SIMPLE.value):
         """
-        Sets up the game.
+        Initializes the game.
 
         :param car: The name of the car inside the cars.yaml file.
         :param track: The name of the track inside the tracks.yaml file.
@@ -130,7 +132,8 @@ class Game:
         self.display.blit(text, [0, 0])
         text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
         self.display.blit(text, [0, 30])
-        text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True, Color.WHITE.value)
+        text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True,
+                           Color.WHITE.value)
         self.display.blit(text, [0, 60])
         text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
         self.display.blit(text, [0, 90])
@@ -157,7 +160,7 @@ class Game:
 
         # Calculate offset
         rotated_rect = rotated_image.get_rect(center=(self.car.x_position, self.car.y_position))
-        offset = (0-rotated_rect.topleft[0], 0-rotated_rect.topleft[1])
+        offset = (0 - rotated_rect.topleft[0], 0 - rotated_rect.topleft[1])
 
         return not bool(car_mask.overlap(track_mask, offset))
 
