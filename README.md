@@ -1,8 +1,8 @@
 # Prerequisites
 
 * Python **3.11.4**
-  * `virtualenv` python package
-    * to install, run: `pip install virtualenv`
+    * `virtualenv` python package
+        * to install, run: `pip install virtualenv`
 * pip **24.0**
 * **Windows 10** or above
 
@@ -11,11 +11,13 @@
 Navigate to the **project's root**.
 
 Create a virtual environment:
+
 ```shell
 virtualenv .venv
 ```
 
 Activate the environment:
+
 ```shell
 .venv/Scripts/activate
 ```
@@ -37,16 +39,31 @@ pip install pyyaml
 * `pyyaml`: yaml imports
 
 To deactivate the environment:
+
 ```shell
 deactivate
 ```
 
 # Run
 
+## Game
+
+The user can play the game with **WASD / arrow** controls.
+
 Activate the `.venv` and run the following command from the **project's root**:
 
 ```shell
 python src/game.py
+```
+
+## Agent
+
+The agent will **start training** by playing the game.
+
+Activate the `.venv` and run the following command from the **project's root**:
+
+```shell
+python src/agent.py
 ```
 
 # Features
@@ -142,7 +159,7 @@ Add the track and its attributes to the `tracks.yaml` file in the `src/resources
 Fill the values inside the `<>` brackets.
 
 * `size`: the size multiplier of the car. Changes the size of the image, and the attributes accordingly.
-  * default: `1`
+    * default: `1`
 * `car_default_state`: the default position of the car when the game is reset.
 * `checkpoints`: at least 2 checkpoints are required
 
@@ -158,7 +175,7 @@ When creating a new track, you can use the enumerator.
 
 #### Example: `example_track = Track(TrackID.EXAMPLE.value)`
 
- > **NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
+> **NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
 
 ## Tests
 
