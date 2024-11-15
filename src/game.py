@@ -62,40 +62,42 @@ class Game:
         self.reached_checkpoints = set()
         self.lap_count = 0
 
-    def play_step(self, action) -> tuple[float, bool, float]:
+    def play_step(self, action: list[int]) -> tuple[float, bool, float]:
         """
         Play the next step of the game using the given action.
 
-        :param action: The action to execute in the next step of the game.
-        :return: reward (for the executed action), game_over (whether the continues), score (the current score)
+        :param action: A list representing the action to execute in the next step of the game.
+            The length of the list is the number of the possible actions.
+            Every number is 0, besides the index of the action to take, which is a 1.
+        :return: reward (for the executed action), done (whether the continues), score (the current score)
         """
-        # TODO: reward, game_over, score system
+        # TODO: reward, done, score system
         reward = 0
-        game_over = self._car_offtrack()
+        done = self._car_offtrack()
         score = 0
 
         # Check progression
         self._check_progression()
 
-        if action == 1:
+        if action == [0, 1, 0, 0, 0, 0, 0, 0, 0]:
             self.car.accelerate()
             self.car.turn(Direction.LEFT)
-        elif action == 2:
+        elif action == [0, 0, 1, 0, 0, 0, 0, 0, 0]:
             self.car.accelerate()
-        elif action == 3:
+        elif action == [0, 0, 0, 1, 0, 0, 0, 0, 0]:
             self.car.accelerate()
             self.car.turn(Direction.RIGHT)
-        elif action == 4:
+        elif action == [0, 0, 0, 0, 1, 0, 0, 0, 0]:
             self.car.turn(Direction.RIGHT)
-        elif action == 5:
+        elif action == [0, 0, 0, 0, 0, 1, 0, 0, 0]:
             self.car.brake()
             self.car.turn(Direction.RIGHT)
-        elif action == 6:
+        elif action == [0, 0, 0, 0, 0, 0, 1, 0, 0]:
             self.car.brake()
-        elif action == 7:
+        elif action == [0, 0, 0, 0, 0, 0, 0, 1, 0]:
             self.car.brake()
             self.car.turn(Direction.LEFT)
-        elif action == 8:
+        elif action == [0, 0, 0, 0, 0, 0, 0, 0, 1]:
             self.car.turn(Direction.LEFT)
         else:
             pass
@@ -111,7 +113,7 @@ class Game:
         self.car.move()
         self._update_display()
         self.clock.tick(self.fps)
-        return reward, game_over, score
+        return reward, done, score
 
     def _update_display(self):
         """ Update the display. """
@@ -213,7 +215,7 @@ class Game:
                 self.reached_checkpoints = set()
                 self.lap_count += 1
 
-    def _cast_ray(self, angle_offset: int = 0):
+    def _cast_ray(self, angle_offset: int = 0) -> float:
         """
         Casts a ray from the middle of the car in the given angle. The ray stops when it hits the side of the track.
 
@@ -238,7 +240,7 @@ class Game:
                 # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
                 return length
 
-    def get_rays(self) -> list[int]:
+    def get_rays(self) -> list[float]:
         """
         Casts all the rays and calculates their lengths.
 
@@ -252,6 +254,7 @@ class Game:
 
         return result
 
+
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
@@ -260,7 +263,7 @@ if __name__ == '__main__':
     # Game loop
     while True:
         # Default action (do nothing)
-        player_action = 0
+        player_action = [1, 0, 0, 0, 0, 0, 0, 0, 0]
 
         # Currently pressed keys
         keys = pygame.key.get_pressed()
@@ -277,23 +280,23 @@ if __name__ == '__main__':
 
         # Calculate action
         if accelerate and brake:
-            player_action = 0
+            player_action = [1, 0, 0, 0, 0, 0, 0, 0, 0]
         elif accelerate and turn_left and not turn_right:
-            player_action = 1
+            player_action = [0, 1, 0, 0, 0, 0, 0, 0, 0]
         elif accelerate and ((not turn_left and not turn_right) or (turn_left and turn_right)):
-            player_action = 2
+            player_action = [0, 0, 1, 0, 0, 0, 0, 0, 0]
         elif accelerate and turn_right and not turn_left:
-            player_action = 3
+            player_action = [0, 0, 0, 1, 0, 0, 0, 0, 0]
         elif turn_right and (not accelerate and not brake):
-            player_action = 4
+            player_action = [0, 0, 0, 0, 1, 0, 0, 0, 0]
         elif brake and turn_right and not turn_left:
-            player_action = 5
+            player_action = [0, 0, 0, 0, 0, 1, 0, 0, 0]
         elif brake and (not turn_left and not turn_right):
-            player_action = 6
+            player_action = [0, 0, 0, 0, 0, 0, 1, 0, 0]
         elif brake and turn_left and not turn_right:
-            player_action = 7
+            player_action = [0, 0, 0, 0, 0, 0, 0, 1, 0]
         elif turn_left and (not accelerate or not brake):
-            player_action = 8
+            player_action = [0, 0, 0, 0, 0, 0, 0, 0, 1]
 
         # Execute action, go to next state
         _, game_over, _ = game.play_step(player_action)
