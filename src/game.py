@@ -20,8 +20,9 @@ FONT = pygame.font.SysFont('arial', 25)
 
 
 class GameAction:
-    # TODO docs
+    """ Helper class for handling game actions. """
 
+    # Constants
     NO_ACTION = [1, 0, 0, 0, 0, 0, 0, 0, 0]
     FORWARD_LEFT = [0, 1, 0, 0, 0, 0, 0, 0, 0]
     FORWARD = [0, 0, 1, 0, 0, 0, 0, 0, 0]
@@ -104,6 +105,7 @@ class GameAction:
 
 
 class GameState:
+    # TODO necessary?
     ...
 
 
