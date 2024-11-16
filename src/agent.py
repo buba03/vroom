@@ -6,7 +6,7 @@ from collections import deque
 import numpy as np
 import torch
 
-from game import Game
+from game import Game, GameAction, GameState
 from model import Linear_QNet, QTrainer
 
 # from helper import plot
@@ -27,7 +27,7 @@ class Agent:
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = Linear_QNet(11, 256, 9)
+        self.model = Linear_QNet(11, 256, GameAction(-1).action_count)
         # self.model.load()
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
@@ -119,20 +119,24 @@ class Agent:
         """
         # random moves: tradeoff exploration / exploitation
         self.epsilon = 80 - self.number_of_games
-        final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        # Empty action
+        game_action = GameAction(-1)
+        # Random
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 8)
-            final_move[move] = 1
+            game_action.action = move
+        # Model
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)  # executes the model.forward function
             move = torch.argmax(prediction).item()
-            final_move[move] = 1
+            game_action.action = move
 
-        return final_move
+        return game_action.action
 
 
-def train():
+# When ran as main, the agent will start the training process.
+if __name__ == '__main__':
     # TODO extend docs
     """
     Starts the training process. Instantiates a fresh Agent and Game.
@@ -181,8 +185,3 @@ def train():
             # mean_score = total_score / agent.number_of_games
             # plot_mean_scores.append(mean_score)
             # plot(plot_scores, plot_mean_scores)
-
-
-# When ran as main, the agent will start the training process.
-if __name__ == '__main__':
-    train()

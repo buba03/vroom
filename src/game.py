@@ -19,6 +19,94 @@ pygame.init()
 FONT = pygame.font.SysFont('arial', 25)
 
 
+class GameAction:
+    # TODO docs
+
+    NO_ACTION = [1, 0, 0, 0, 0, 0, 0, 0, 0]
+    FORWARD_LEFT = [0, 1, 0, 0, 0, 0, 0, 0, 0]
+    FORWARD = [0, 0, 1, 0, 0, 0, 0, 0, 0]
+    FORWARD_RIGHT = [0, 0, 0, 1, 0, 0, 0, 0, 0]
+    TURN_RIGHT = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+    BACKWARD_RIGHT = [0, 0, 0, 0, 0, 1, 0, 0, 0]
+    BACKWARD = [0, 0, 0, 0, 0, 0, 1, 0, 0]
+    BACKWARD_LEFT = [0, 0, 0, 0, 0, 0, 0, 1, 0]
+    TURN_LEFT = [0, 0, 0, 0, 0, 0, 0, 0, 1]
+
+    def __init__(self, action, action_count: int = 9):
+        """
+        Initializes a GameAction object.
+
+        :param action: The action stored as a list of integers. The list is filled with zeros, only one int is 1.
+        Can be given as a list - the length of the list is the action_count.
+        Can be given as an integer meaning the index of the list, which should be a 1.
+        :param action_count: The number of possible actions. Default is 9.
+        """
+        # TODO into yaml
+        self.action_count = action_count
+
+        self.action = action
+
+    @property
+    def action(self):
+        """
+        Gets the value of the private attribute.
+        """
+        return self._action
+
+    @action.setter
+    def action(self, other):
+        """
+        Sets the value of the private attribute.
+        Can be given as a list - the length of the list is the action_count.
+        Can be given as an integer - meaning the index of the list, which should be a 1.
+        """
+        # List
+        if isinstance(other, list):
+            # Check length
+            if len(other) != self.action_count:
+                raise Exception(f'The length of the list should be {self.action_count}, instead of {len(other)}.')
+            else:
+                self._action = other
+        # Integer
+        elif isinstance(other, int):
+            # Out of bounds
+            if other >= self.action_count:
+                raise Exception(
+                    f'The index cannot exceed the length of the possible actions. Maximum index is {self.action_count - 1}, got: {other}.')
+            # Empty action
+            elif other < 0:
+                self._action = [0] * self.action_count
+            # Action by index
+            else:
+                self._action = [0] * self.action_count
+                self._action[other] = 1
+        # Anything else
+        else:
+            raise Exception(f'The new_action should be a list or int.')
+
+    @property
+    def action_count(self) -> int:
+        """
+        Gets the value of the private attribute.
+        """
+        return self._action_count
+
+    @action_count.setter
+    def action_count(self, other: int):
+        """
+        Sets the value of the private attribute.
+        Only integers are allowed.
+        """
+        if not isinstance(other, int):
+            raise Exception(f'int expected, got {type(other)} instead.')
+        else:
+            self._action_count = other
+
+
+class GameState:
+    ...
+
+
 class Game:
     """ Class for game logic. """
 
@@ -68,9 +156,7 @@ class Game:
         """
         Play the next step of the game using the given action.
 
-        :param action: A list representing the action to execute in the next step of the game.
-            The length of the list is the number of the possible actions.
-            Every number is 0, besides the index of the action to take, which is a 1.
+        :param action: A GameAction object.
         :return: reward (for the executed action), done (whether the continues), score (the current score)
         """
         # TODO: reward, done, score system
@@ -81,25 +167,25 @@ class Game:
         # Check progression
         self._check_progression()
 
-        if action == [0, 1, 0, 0, 0, 0, 0, 0, 0]:
+        if action == GameAction.FORWARD_LEFT:
             self.car.accelerate()
             self.car.turn(Direction.LEFT)
-        elif action == [0, 0, 1, 0, 0, 0, 0, 0, 0]:
+        elif action == GameAction.FORWARD:
             self.car.accelerate()
-        elif action == [0, 0, 0, 1, 0, 0, 0, 0, 0]:
+        elif action == GameAction.FORWARD_RIGHT:
             self.car.accelerate()
             self.car.turn(Direction.RIGHT)
-        elif action == [0, 0, 0, 0, 1, 0, 0, 0, 0]:
+        elif action == GameAction.TURN_RIGHT:
             self.car.turn(Direction.RIGHT)
-        elif action == [0, 0, 0, 0, 0, 1, 0, 0, 0]:
+        elif action == GameAction.BACKWARD_RIGHT:
             self.car.brake()
             self.car.turn(Direction.RIGHT)
-        elif action == [0, 0, 0, 0, 0, 0, 1, 0, 0]:
+        elif action == GameAction.BACKWARD:
             self.car.brake()
-        elif action == [0, 0, 0, 0, 0, 0, 0, 1, 0]:
+        elif action == GameAction.BACKWARD_LEFT:
             self.car.brake()
             self.car.turn(Direction.LEFT)
-        elif action == [0, 0, 0, 0, 0, 0, 0, 0, 1]:
+        elif action == GameAction.TURN_LEFT:
             self.car.turn(Direction.LEFT)
         else:
             pass
@@ -266,7 +352,7 @@ if __name__ == '__main__':
     # Game loop
     while True:
         # Default action (do nothing)
-        player_action = [1, 0, 0, 0, 0, 0, 0, 0, 0]
+        player_action = GameAction.NO_ACTION
 
         # Currently pressed keys
         keys = pygame.key.get_pressed()
@@ -283,23 +369,23 @@ if __name__ == '__main__':
 
         # Calculate action
         if accelerate and brake:
-            player_action = [1, 0, 0, 0, 0, 0, 0, 0, 0]
+            player_action = GameAction.NO_ACTION
         elif accelerate and turn_left and not turn_right:
-            player_action = [0, 1, 0, 0, 0, 0, 0, 0, 0]
+            player_action = GameAction.FORWARD_LEFT
         elif accelerate and ((not turn_left and not turn_right) or (turn_left and turn_right)):
-            player_action = [0, 0, 1, 0, 0, 0, 0, 0, 0]
+            player_action = GameAction.FORWARD
         elif accelerate and turn_right and not turn_left:
-            player_action = [0, 0, 0, 1, 0, 0, 0, 0, 0]
+            player_action = GameAction.FORWARD_RIGHT
         elif turn_right and (not accelerate and not brake):
-            player_action = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+            player_action = GameAction.TURN_RIGHT
         elif brake and turn_right and not turn_left:
-            player_action = [0, 0, 0, 0, 0, 1, 0, 0, 0]
+            player_action = GameAction.BACKWARD_RIGHT
         elif brake and (not turn_left and not turn_right):
-            player_action = [0, 0, 0, 0, 0, 0, 1, 0, 0]
+            player_action = GameAction.BACKWARD
         elif brake and turn_left and not turn_right:
-            player_action = [0, 0, 0, 0, 0, 0, 0, 1, 0]
+            player_action = GameAction.BACKWARD_LEFT
         elif turn_left and (not accelerate or not brake):
-            player_action = [0, 0, 0, 0, 0, 0, 0, 0, 1]
+            player_action = GameAction.TURN_LEFT
 
         # Execute action, go to next state
         _, game_over, _ = game.play_step(player_action)

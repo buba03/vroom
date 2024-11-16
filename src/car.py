@@ -8,6 +8,7 @@ import pygame
 from utils.enums import Direction
 from utils.yaml_manager import YamlManager
 
+# TODO put this somewhere?
 HANDLING_THRESHOLD = 4
 
 
