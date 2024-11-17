@@ -155,11 +155,8 @@ class Car:
         Move the car based on the current velocity and angle of the car. Applies friction.
         Uses the car's friction attribute.
         """
-        # Change friction multiplier based on velocity
-        friction_multiplier = -1 if self.velocity < 0 else 1
-        # Apply friction
-        self.velocity = self.velocity - self.friction * friction_multiplier if not abs(
-            self.velocity) < self.friction else 0
+        # Apply friction before moving
+        self.apply_friction()
 
         # Calculate movement vector based on velocity and angle
         direction = rotate_vector((self.velocity, 0), self.angle)
@@ -176,6 +173,8 @@ class Car:
         :param direction: The direction of the turn.
         """
         global HANDLING_THRESHOLD
+        # Apply extra friction when turning
+        self.apply_friction()
 
         # Change multiplier based on Right - Left
         direction_multiplier = -1 if direction == Direction.RIGHT else 1
@@ -202,6 +201,13 @@ class Car:
         # Apply new angle
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
+
+    def apply_friction(self):
+        # Change friction multiplier based on velocity
+        friction_multiplier = -1 if self.velocity < 0 else 1
+        # Apply friction
+        self.velocity = self.velocity - self.friction * friction_multiplier if not abs(
+            self.velocity) < self.friction else 0
 
     def draw(self, surface):
         """
