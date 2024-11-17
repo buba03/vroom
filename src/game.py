@@ -104,11 +104,6 @@ class GameAction:
             self._action_count = other
 
 
-class GameState:
-    # TODO necessary?
-    ...
-
-
 class Game:
     """ Class for game logic. """
 
