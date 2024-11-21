@@ -16,7 +16,7 @@ from utils.yaml_manager import YamlManager
 # Initialize pygame
 pygame.init()
 # Constants
-FONT = pygame.font.SysFont('arial', 25)
+FONT = pygame.font.SysFont('arial', 18)
 
 
 class GameAction:
@@ -107,7 +107,7 @@ class GameAction:
 class Game:
     """ Class for game logic. """
 
-    def __init__(self, car: str = CarID.FERRARI.value, track: str = TrackID.SIMPLE.value):
+    def __init__(self, car: str = CarID.FERRARI.value, track: str = TrackID.OVAL.value):
         """
         Initializes the game.
 
@@ -156,14 +156,69 @@ class Game:
         :param action: A GameAction object.
         :return: reward (for the executed action), done (whether the continues), score (the current score)
         """
-        # TODO: reward, done, score system
+        # Get state before applying the action
+        score = self.get_score()
         reward = 0
-        done = self._car_offtrack()
-        score = 0
 
-        # Check progression
+        # Apply action
+        self.apply_action_on_car(action)
+        # Update progression
         self._check_progression()
 
+        # Game over?
+        done = self._car_offtrack()
+
+        if self.get_score() > score:
+            reward += 10
+
+        if done:
+            reward = -10
+
+        # Event handler
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        # TODO: plots?
+
+        # Apply changes
+        self._update_display()
+        self.clock.tick(self.fps)
+        return reward, done, score
+
+    def _update_display(self):
+        """ Update the display. """
+
+        # Background
+        self.display.fill(Color.GRASS.value)
+
+        # Items
+        self.track.draw(self.display)
+        self.car.draw(self.display)
+
+        # Text
+        text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
+        self.display.blit(text, [0, 0])
+        text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
+        self.display.blit(text, [0, 20])
+        text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True,
+                           Color.WHITE.value)
+        self.display.blit(text, [0, 40])
+        text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 60])
+        text = FONT.render(f"Progress: {str(self.reached_checkpoints)}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 80])
+        text = FONT.render(f"Laps: {str(self.lap_count)}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 100])
+        text = FONT.render(f"Score: {str(self.get_score())}", True, Color.WHITE.value)
+        self.display.blit(text, [0, 180])
+
+        # Update
+        pygame.display.flip()
+
+    def apply_action_on_car(self, action):
+        # Action handler
         if action == GameAction.FORWARD_LEFT:
             self.car.accelerate()
             self.car.turn(Direction.LEFT)
@@ -187,46 +242,8 @@ class Game:
         else:
             pass
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        # TODO: plots?
-
-        # TODO: move before or after action ?
+        # Make the action
         self.car.move()
-        self._update_display()
-        self.clock.tick(self.fps)
-        return reward, done, score
-
-    def _update_display(self):
-        """ Update the display. """
-
-        # Background
-        self.display.fill(Color.GRASS.value)
-
-        # Items
-        self.track.draw(self.display)
-        self.car.draw(self.display)
-
-        # Text
-        text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
-        self.display.blit(text, [0, 0])
-        text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
-        self.display.blit(text, [0, 30])
-        text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True,
-                           Color.WHITE.value)
-        self.display.blit(text, [0, 60])
-        text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
-        self.display.blit(text, [0, 90])
-        text = FONT.render(f"Progress: {str(self.reached_checkpoints)}", True, Color.WHITE.value)
-        self.display.blit(text, [0, 120])
-        text = FONT.render(f"Laps: {str(self.lap_count)}", True, Color.WHITE.value)
-        self.display.blit(text, [0, 150])
-
-        # Update
-        pygame.display.flip()
 
     def _car_offtrack(self) -> bool:
         """
@@ -339,6 +356,9 @@ class Game:
             result.append(self._cast_ray(angle))
 
         return result
+
+    def get_score(self) -> int:
+        return len(self.reached_checkpoints) + self.lap_count * len(self.track.checkpoints)
 
 
 # When ran as main, the game will use player inputs.

@@ -6,7 +6,7 @@ from collections import deque
 import numpy as np
 import torch
 
-from game import Game, GameAction, GameState
+from game import Game, GameAction
 from model import Linear_QNet, QTrainer
 
 # from helper import plot
