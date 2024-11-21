@@ -5,8 +5,7 @@ import os
 
 PATH = os.path.join('src', 'resources')
 
-print(os.path.isfile(PATH))  # Should return True if it's a file
-print(os.path.isdir(PATH))
+
 class ConfigManager:
     """ Class for yaml management. """
 
