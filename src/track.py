@@ -1,10 +1,8 @@
 """ Module for racetrack implementation. """
 
-import os
-
 import pygame
 
-from utils.yaml_manager import YamlManager
+from utils.config_manager import ConfigManager
 
 
 def set_image(path: str):
@@ -43,7 +41,7 @@ class Track:
         self.id = track_id
 
         # yaml import
-        track_attributes = YamlManager(os.path.join('src', 'resources', 'tracks.yaml')).get_track_attributes(track_id)
+        track_attributes = ConfigManager().get_track_attributes(track_id)
 
         # Set values from yaml
         self.car_size = track_attributes['size']
@@ -51,7 +49,7 @@ class Track:
         self.checkpoints = set_checkpoints(track_attributes['checkpoints'])
 
         # Set track image according to the track_id
-        self.image = set_image(os.path.join('src', 'resources', 'tracks', track_id + '.png'))
+        self.image = set_image(ConfigManager().get_track_image_path(track_id))
 
     def get_car_default_state(self) -> tuple[float, float, float]:
         """

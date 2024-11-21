@@ -1,12 +1,10 @@
 """ Module for a realistic car implementation. """
 
-import os
-
 import numpy as np
 import pygame
 
 from utils.enums import Direction
-from utils.yaml_manager import YamlManager
+from utils.config_manager import ConfigManager
 
 # TODO put this somewhere?
 HANDLING_THRESHOLD = 4
@@ -77,7 +75,7 @@ class Car:
         self.id = car_id
 
         # yaml import
-        car_attributes = YamlManager(os.path.join('src', 'resources', 'cars.yaml')).get_car_attributes(car_id)
+        car_attributes = ConfigManager().get_car_attributes(car_id)
 
         # Set values from the yaml
         self.acceleration = car_attributes['acceleration']
@@ -88,7 +86,7 @@ class Car:
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
         # Set car image according to the car_id
-        self.image = set_image(os.path.join('src', 'resources', 'cars', car_id + '.png'))
+        self.image = set_image(ConfigManager().get_car_image_path(car_id))
 
         # Position
         self.x_position = None

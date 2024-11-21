@@ -8,7 +8,7 @@ import pygame
 from car import Car
 from track import Track
 from utils.enums import Direction, Color, CarID, TrackID
-from utils.yaml_manager import YamlManager
+from utils.config_manager import ConfigManager
 
 # import random
 # import numpy as np
@@ -115,7 +115,7 @@ class Game:
         :param track: The name of the track inside the tracks.yaml file.
         """
         # yaml import
-        fps, display_attributes = YamlManager(os.path.join('src', 'resources', 'game.yaml')).get_game_attributes()
+        fps, display_attributes = ConfigManager().get_game_attributes()
         # Display
         self.display_width = display_attributes['width']
         self.display_height = display_attributes['height']
@@ -137,7 +137,7 @@ class Game:
         # Clock
         self.clock = pygame.time.Clock()
         # Set up elements
-        self.size = YamlManager(os.path.join('src', 'resources', 'tracks.yaml')).get_car_size_from_track(self.track.id)
+        self.size = ConfigManager().get_car_size_from_track(self.track.id)
         self.car.resize(self.size)
         self.reset()
 
