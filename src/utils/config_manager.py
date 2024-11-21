@@ -1,4 +1,4 @@
-""" Module for yaml management. """
+""" Module for configuration management. """
 
 import yaml
 import os
@@ -7,11 +7,11 @@ PATH = os.path.join('src', 'resources')
 
 
 class ConfigManager:
-    """ Class for yaml management. """
+    """ Class for managing yaml files and image paths. """
 
     def __init__(self):
         """
-        Initializes the yaml manager with the given path.
+        Initializes the config manager.
 
         """
         self._path = PATH
