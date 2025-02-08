@@ -107,19 +107,17 @@ The values are percentage based (between the `min_values` and `max_values`).
 
 Fill the values inside the `<>` brackets.
 
-### Enum
+### Class attribute
 
-Go to the `src/utils/enums.py` file and add a new value according to your `car_id`.
+Go to the `src/car.py` file and add a new value according to your `car_id`.
 
-#### Format: `EXAMPLE = "car_id"`
+#### Format: `EXAMPLE = 'car_id'`
 
 ### Usage
 
 When creating a new car, you can use the enumerator.
 
-#### Example: `example_car = Car(CarID.EXAMPLE.value)`
-
-> **NOTE**: Import the enums to access the cars: `from utils.enums import CarID`.
+#### Example: `example_car = Car(Car.EXAMPLE)`
 
 ## New track
 
@@ -163,19 +161,17 @@ Fill the values inside the `<>` brackets.
 * `car_default_state`: the default position of the car when the game is reset.
 * `checkpoints`: at least 2 checkpoints are required
 
-### Enum
+### Class attribute
 
-Go to the `src/utils/enums.py` file and add a new value according to your `track_id`.
+Go to the `src/track.py` file and add a new value according to your `track_id`.
 
-#### Format: `EXAMPLE = "track_id"`
+#### Format: `EXAMPLE = 'track_id'`
 
 ### Usage
 
 When creating a new track, you can use the enumerator.
 
-#### Example: `example_track = Track(TrackID.EXAMPLE.value)`
-
-> **NOTE**: Import the enums to access the tracks: `from utils.enums import TrackID`.
+#### Example: `example_track = Track(Track.EXAMPLE)`
 
 ## Tests
 

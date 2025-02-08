@@ -23,22 +23,3 @@ class Direction(Enum):
     RIGHT = 1
     UP = 3
     DOWN = 4
-
-
-class CarID(Enum):
-    """
-    Enumeration for car_ids.
-    When using .value, returns the str necessary to identify the car.
-    """
-    FERRARI = 'ferrari'
-    MCLAREN = 'mclaren'
-    F1 = 'f1'
-
-
-class TrackID(Enum):
-    """
-    Enumeration for track_ids.
-    When using .value, returns the str necessary to identify the track.
-    """
-    OVAL = 'oval'
-    SIMPLE = 'simple'

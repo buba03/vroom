@@ -65,6 +65,10 @@ def scale_image(img, new_width: int = None, new_height: int = None):
 class Car:
     """ Represents a controllable car. """
 
+    FERRARI = 'ferrari'
+    MCLAREN = 'mclaren'
+    F1 = 'f1'
+
     def __init__(self, car_id: str):
         """
         Initializes the car object according to the car_id.
@@ -122,22 +126,14 @@ class Car:
         """ The top left position of the car. """
         return self.x_position, self.y_position
 
-    def _set_position(self, x: float = None, y: float = None):
+    def __set_position(self, x: float = None, y: float = None):
         """ Set the center position of the car. """
         if x is not None:
             self.x_position = x
         if y is not None:
             self.y_position = y
 
-    def accelerate(self):
-        """ Accelerate the car. Uses the car's acceleration attribute. """
-        self._set_velocity(self.acceleration)
-
-    def brake(self):
-        """ Slow down or reverse the car. Uses the car's braking attribute. """
-        self._set_velocity(-self.braking)
-
-    def _set_velocity(self, acceleration: float):
+    def __set_velocity(self, acceleration: float):
         """
         Set the velocity of the car.
 
@@ -148,19 +144,13 @@ class Car:
         elif self.velocity < 0:
             self.velocity = max(self.velocity + acceleration, self.max_reverse_speed)
 
-    def move(self):
-        """
-        Move the car based on the current velocity and angle of the car. Applies friction.
-        Uses the car's friction attribute.
-        """
-        # Apply friction before moving
-        self.apply_friction()
+    def accelerate(self):
+        """ Accelerate the car. Uses the car's acceleration attribute. """
+        self.__set_velocity(self.acceleration)
 
-        # Calculate movement vector based on velocity and angle
-        direction = rotate_vector((self.velocity, 0), self.angle)
-        # Change position based on the movement vector
-        self.x_position += direction[0]
-        self.y_position += direction[1]
+    def brake(self):
+        """ Slow down or reverse the car. Uses the car's braking attribute. """
+        self.__set_velocity(-self.braking)
 
     def turn(self, direction: Direction):
         """
@@ -199,6 +189,20 @@ class Car:
         # Apply new angle
         self.angle += angle * direction_multiplier
         self.angle = self.angle % 360
+
+    def move(self):
+        """
+        Move the car based on the current velocity and angle of the car. Applies friction.
+        Uses the car's friction attribute.
+        """
+        # Apply friction before moving
+        self.apply_friction()
+
+        # Calculate movement vector based on velocity and angle
+        direction = rotate_vector((self.velocity, 0), self.angle)
+        # Change position based on the movement vector
+        self.x_position += direction[0]
+        self.y_position += direction[1]
 
     def apply_friction(self):
         # Change friction multiplier based on velocity

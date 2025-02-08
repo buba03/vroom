@@ -7,7 +7,7 @@ import pygame
 
 from car import Car
 from track import Track
-from utils.enums import Direction, Color, CarID, TrackID
+from utils.enums import Direction, Color
 from utils.config_manager import ConfigManager
 
 # import random
@@ -24,14 +24,14 @@ class GameAction:
 
     # Constants
     NO_ACTION = [1, 0, 0, 0, 0, 0, 0, 0, 0]
-    FORWARD_LEFT = [0, 1, 0, 0, 0, 0, 0, 0, 0]
-    FORWARD = [0, 0, 1, 0, 0, 0, 0, 0, 0]
-    FORWARD_RIGHT = [0, 0, 0, 1, 0, 0, 0, 0, 0]
-    TURN_RIGHT = [0, 0, 0, 0, 1, 0, 0, 0, 0]
-    BACKWARD_RIGHT = [0, 0, 0, 0, 0, 1, 0, 0, 0]
-    BACKWARD = [0, 0, 0, 0, 0, 0, 1, 0, 0]
-    BACKWARD_LEFT = [0, 0, 0, 0, 0, 0, 0, 1, 0]
-    TURN_LEFT = [0, 0, 0, 0, 0, 0, 0, 0, 1]
+    FORWARD = [0, 1, 0, 0, 0, 0, 0, 0, 0]
+    FORWARD_RIGHT = [0, 0, 1, 0, 0, 0, 0, 0, 0]
+    TURN_RIGHT = [0, 0, 0, 1, 0, 0, 0, 0, 0]
+    BACKWARD_RIGHT = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+    BACKWARD = [0, 0, 0, 0, 0, 1, 0, 0, 0]
+    BACKWARD_LEFT = [0, 0, 0, 0, 0, 0, 1, 0, 0]
+    TURN_LEFT = [0, 0, 0, 0, 0, 0, 0, 1, 0]
+    FORWARD_LEFT = [0, 0, 0, 0, 0, 0, 0, 0, 1]
 
     def __init__(self, action, action_count: int = 9):
         """
@@ -48,7 +48,7 @@ class GameAction:
         self.action = action
 
     @property
-    def action(self):
+    def action(self) -> list:
         """
         Gets the value of the private attribute.
         """
@@ -107,7 +107,7 @@ class GameAction:
 class Game:
     """ Class for game logic. """
 
-    def __init__(self, car: str = CarID.FERRARI.value, track: str = TrackID.OVAL.value):
+    def __init__(self, car: str = Car.FERRARI, track: str = Track.OVAL):
         """
         Initializes the game.
 
@@ -116,9 +116,6 @@ class Game:
         """
         # yaml import
         fps, display_attributes = ConfigManager().get_game_attributes()
-        # Display
-        self.display_width = display_attributes['width']
-        self.display_height = display_attributes['height']
         # FPS
         self.fps = fps
 
@@ -132,7 +129,7 @@ class Game:
         self.track = Track(track)
 
         # init display
-        self.display = pygame.display.set_mode((self.display_width, self.display_height))
+        self.display = pygame.display.set_mode((display_attributes['width'], display_attributes['height']))
         pygame.display.set_caption('Vroom v1.0.0')
         # Clock
         self.clock = pygame.time.Clock()
@@ -183,11 +180,11 @@ class Game:
         # TODO: plots?
 
         # Apply changes
-        self._update_display()
+        self.__update_display()
         self.clock.tick(self.fps)
         return reward, done, score
 
-    def _update_display(self):
+    def __update_display(self):
         """ Update the display. """
 
         # Background
@@ -219,10 +216,7 @@ class Game:
 
     def apply_action_on_car(self, action):
         # Action handler
-        if action == GameAction.FORWARD_LEFT:
-            self.car.accelerate()
-            self.car.turn(Direction.LEFT)
-        elif action == GameAction.FORWARD:
+        if action == GameAction.FORWARD:
             self.car.accelerate()
         elif action == GameAction.FORWARD_RIGHT:
             self.car.accelerate()
@@ -238,6 +232,9 @@ class Game:
             self.car.brake()
             self.car.turn(Direction.LEFT)
         elif action == GameAction.TURN_LEFT:
+            self.car.turn(Direction.LEFT)
+        elif action == GameAction.FORWARD_LEFT:
+            self.car.accelerate()
             self.car.turn(Direction.LEFT)
         else:
             pass
@@ -364,7 +361,7 @@ class Game:
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game(CarID.FERRARI.value, TrackID.SIMPLE.value)
+    game = Game(Car.FERRARI, Track.SIMPLE)
 
     # Game loop
     while True:
@@ -387,8 +384,6 @@ if __name__ == '__main__':
         # Calculate action
         if accelerate and brake:
             player_action = GameAction.NO_ACTION
-        elif accelerate and turn_left and not turn_right:
-            player_action = GameAction.FORWARD_LEFT
         elif accelerate and ((not turn_left and not turn_right) or (turn_left and turn_right)):
             player_action = GameAction.FORWARD
         elif accelerate and turn_right and not turn_left:
@@ -401,8 +396,10 @@ if __name__ == '__main__':
             player_action = GameAction.BACKWARD
         elif brake and turn_left and not turn_right:
             player_action = GameAction.BACKWARD_LEFT
-        elif turn_left and (not accelerate or not brake):
+        elif turn_left and (not accelerate and not brake):
             player_action = GameAction.TURN_LEFT
+        elif accelerate and turn_left and not turn_right:
+            player_action = GameAction.FORWARD_LEFT
 
         # Execute action, go to next state
         _, game_over, _ = game.play_step(player_action)

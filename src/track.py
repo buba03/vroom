@@ -31,6 +31,9 @@ def set_checkpoints(points: dict) -> list[tuple[float, float]]:
 class Track:
     """ Represents a racetrack for a car. """
 
+    OVAL = 'oval'
+    SIMPLE = 'simple'
+
     def __init__(self, track_id):
         """
         Initializes the track object according to the track_id.
