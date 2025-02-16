@@ -7,7 +7,7 @@ from utils.enums import Direction
 from utils.config_manager import ConfigManager
 
 # TODO put this somewhere?
-HANDLING_THRESHOLD = 4
+HANDLING_VELOCITY_THRESHOLD = 4
 
 
 def rotate_vector(vector, angle_degrees: float):
@@ -106,7 +106,7 @@ class Car:
 
         :param multiplier: The multiplier of the resize.
         """
-        global HANDLING_THRESHOLD
+        global HANDLING_VELOCITY_THRESHOLD
 
         # Size
         new_width, _ = self.image.get_size()
@@ -120,7 +120,7 @@ class Car:
         self.max_speed *= multiplier * multiplier
         self.max_reverse_speed *= multiplier * multiplier
 
-        HANDLING_THRESHOLD *= multiplier
+        HANDLING_VELOCITY_THRESHOLD *= multiplier
 
     def get_center_position(self) -> tuple[float, float]:
         """ The top left position of the car. """
@@ -160,7 +160,7 @@ class Car:
 
         :param direction: The direction of the turn.
         """
-        global HANDLING_THRESHOLD
+        global HANDLING_VELOCITY_THRESHOLD
         # Apply extra friction when turning
         self.apply_friction()
 
@@ -173,7 +173,7 @@ class Car:
         angle = self.handling * abs(self.velocity)
 
         # Normalizing handling if getting faster
-        min_threshold = HANDLING_THRESHOLD
+        min_threshold = HANDLING_VELOCITY_THRESHOLD
         max_threshold = self.max_speed
         # Normalize between 0 and 1
         normalized_velocity = 1 - (abs(self.velocity) - min_threshold) / (max_threshold - min_threshold)

@@ -160,10 +160,10 @@ class Game:
         # Apply action
         self.apply_action_on_car(action)
         # Update progression
-        self._check_progression()
+        self.__check_progression()
 
         # Game over?
-        done = self._car_offtrack()
+        done = self.__car_offtrack()
 
         if self.get_score() > score:
             reward += 10
@@ -242,7 +242,7 @@ class Game:
         # Make the action
         self.car.move()
 
-    def _car_offtrack(self) -> bool:
+    def __car_offtrack(self) -> bool:
         """
         Checks whether the track and the car has collided.
 
@@ -261,7 +261,7 @@ class Game:
 
         return not bool(car_mask.overlap(track_mask, offset))
 
-    def _get_checkpoint_reached(self) -> int:
+    def __get_checkpoint_reached(self) -> int:
         """
         Checks if the car reached a new checkpoint and returns it.
 
@@ -291,11 +291,11 @@ class Game:
         """
         return len(self.reached_checkpoints) % len(self.track.checkpoints)
 
-    def _check_progression(self):
+    def __check_progression(self):
         """ Checks the car's progression on the track. Updates reached checkpoints and lap counts. """
 
         # Get the currently touched checkpoint
-        checkpoint = self._get_checkpoint_reached()
+        checkpoint = self.__get_checkpoint_reached()
 
         # Check whether it's the next one
         if checkpoint != self.get_next_checkpoint():
@@ -315,7 +315,7 @@ class Game:
                 self.reached_checkpoints = set()
                 self.lap_count += 1
 
-    def _cast_ray(self, angle_offset: int = 0) -> float:
+    def __cast_ray(self, angle_offset: int = 0) -> float:
         """
         Casts a ray from the middle of the car in the given angle. The ray stops when it hits the side of the track.
 
@@ -350,7 +350,7 @@ class Game:
         result = []
 
         for angle in angles:
-            result.append(self._cast_ray(angle))
+            result.append(self.__cast_ray(angle))
 
         return result
 
