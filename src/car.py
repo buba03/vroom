@@ -1,10 +1,13 @@
 """ Module for a realistic car implementation. """
 
+import math
+
 import numpy as np
 import pygame
 
 from utils.enums import Direction
 from utils.config_manager import ConfigManager
+from utils.enums import Color
 
 # TODO put this somewhere?
 HANDLING_VELOCITY_THRESHOLD = 4
@@ -29,37 +32,35 @@ def rotate_vector(vector, angle_degrees: float):
     return np.round(result, decimals=10)
 
 
-def set_image(path: str, new_width=60):
+def get_corner_positions(size: tuple, center: tuple, angle: float) -> list[tuple]:
     """
-    Load an image and scale it based on the length of it. Keeps the aspect ratio.
+    Calculates the corners of a rotated rectangle.
 
-    :param path: Path to the image.
-    :param new_width: The length of the car.
-    :return: The image.
+    :param size: the size of the rectangle as a tuple (width, height).
+    :param center: the center position of the rectangle as a tuple (x, y).
+    :param angle: the angle of the rotation in degrees.
+    :return: The rotated rectangle's corner positions as a list of tuples (x, y).
     """
-    img = pygame.image.load(path)
+    w, h = size
+    cx, cy = center
+    theta = -math.radians(angle)   # Negative, because math and pygame use angles differently
 
-    return scale_image(img, new_width=new_width)
+    # Corner positions (without rotating)
+    corners = [
+        (cx - w / 2, cy - h / 2),
+        (cx + w / 2, cy - h / 2),
+        (cx - w / 2, cy + h / 2),
+        (cx + w / 2, cy + h / 2)
+    ]
 
+    # Rotate the corners
+    rotated_corners = []
+    for x, y in corners:
+        x_new = cx + (x - cx) * math.cos(theta) - (y - cy) * math.sin(theta)
+        y_new = cy + (x - cx) * math.sin(theta) + (y - cy) * math.cos(theta)
+        rotated_corners.append((int(x_new), int(y_new)))
 
-def scale_image(img, new_width: int = None, new_height: int = None):
-    """
-    Scale an image to the given size. If a width or a height is not provided, keeps the aspect ratio.
-
-    :param img: The image to be scaled.
-    :param new_width: The new width of the image.
-    :param new_height: The new height of the image.
-    :return: The scaled image.
-    """
-    width, height = img.get_size()
-    aspect_ratio = height / width
-
-    if new_height is None:
-        new_height = int(new_width * aspect_ratio)
-    if new_width is None:
-        new_width = int(new_height / aspect_ratio)
-
-    return pygame.transform.scale(img, (new_width, new_height))
+    return rotated_corners
 
 
 class Car:
@@ -89,8 +90,10 @@ class Car:
         self.max_speed = car_attributes['max_speed']
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
-        # Set car image according to the car_id
-        self.image = set_image(ConfigManager().get_car_image_path(car_id))
+        # Set surface representing the car
+        # TODO put width and height somewhere
+        self.car_surface = pygame.Surface((60, 30), pygame.SRCALPHA)
+        self.car_surface.fill(Color.RED.value)
 
         # Position
         self.x_position = None
@@ -109,8 +112,8 @@ class Car:
         global HANDLING_VELOCITY_THRESHOLD
 
         # Size
-        new_width, _ = self.image.get_size()
-        self.image = scale_image(self.image, new_width=(new_width * multiplier))
+        # TODO put width and height somewhere
+        self.car_surface = pygame.transform.scale(self.car_surface, (60 * multiplier, 30 * multiplier))
 
         # Attributes
         self.acceleration *= multiplier * multiplier
@@ -125,13 +128,6 @@ class Car:
     def get_center_position(self) -> tuple[float, float]:
         """ The top left position of the car. """
         return self.x_position, self.y_position
-
-    def __set_position(self, x: float = None, y: float = None):
-        """ Set the center position of the car. """
-        if x is not None:
-            self.x_position = x
-        if y is not None:
-            self.y_position = y
 
     def __set_velocity(self, acceleration: float):
         """
@@ -205,11 +201,24 @@ class Car:
         self.y_position += direction[1]
 
     def apply_friction(self):
+        """ Subtracts the friction from the car's current velocity. Uses the car's friction attribute. """
+
         # Change friction multiplier based on velocity
         friction_multiplier = -1 if self.velocity < 0 else 1
         # Apply friction
         self.velocity = self.velocity - self.friction * friction_multiplier if not abs(
             self.velocity) < self.friction else 0
+
+    def get_corners(self, offset) -> list[tuple]:
+        """
+        Calls the get_corner_positions() function with the car's attributes and a given offset.
+
+        :param offset: The corners positions will be further from the center by this offset.
+        :return: The rotated rectangle's corner positions as a list of tuples (x, y)
+        """
+        size = self.car_surface.get_size()[0] + offset, self.car_surface.get_size()[1] + offset
+
+        return get_corner_positions(size, self.get_center_position(), self.angle)
 
     def draw(self, surface):
         """
@@ -217,14 +226,16 @@ class Car:
 
         :param surface: The surface the car should be displayed on.
         """
-        # Draw car based on rotation
-        rotated_image = pygame.transform.rotate(self.image, self.angle)
-        rotated_rect = rotated_image.get_rect(center=(self.x_position, self.y_position))
+        # Rotate
+        rotated_surface = pygame.transform.rotate(self.car_surface, self.angle)
+        rotated_rect = rotated_surface.get_rect(center=(self.x_position, self.y_position))
         # Draw
-        surface.blit(rotated_image, rotated_rect)
+        surface.blit(rotated_surface, rotated_rect.topleft)
 
-        # Hit-box
-        # pygame.draw.rect(surface, (0, 255, 0), rotated_rect, 2)
+        # FIXME debug
+        # corners = self.get_corners()
+        # for pos in corners:
+        #     pygame.draw.circle(surface, (0, 0, 255), pos, 2)
 
     def reset(self, x, y, angle):
         """

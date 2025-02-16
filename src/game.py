@@ -65,17 +65,16 @@ class GameAction:
         if isinstance(other, list):
             # Check length
             if len(other) != self.action_count:
-                raise Exception(f'The length of the list should be {self.action_count}, instead of {len(other)}.')
-            else:
-                self._action = other
+                raise IndexError(f'The length of the list should be {self.action_count}, instead of {len(other)}.')
+            self._action = other
         # Integer
         elif isinstance(other, int):
             # Out of bounds
             if other >= self.action_count:
-                raise Exception(
+                raise IndexError(
                     f'The index cannot exceed the length of the possible actions. Maximum index is {self.action_count - 1}, got: {other}.')
             # Empty action
-            elif other < 0:
+            if other < 0:
                 self._action = [0] * self.action_count
             # Action by index
             else:
@@ -83,7 +82,7 @@ class GameAction:
                 self._action[other] = 1
         # Anything else
         else:
-            raise Exception(f'The new_action should be a list or int.')
+            raise TypeError('The new_action should be a list or int.')
 
     @property
     def action_count(self) -> int:
@@ -99,9 +98,9 @@ class GameAction:
         Only integers are allowed.
         """
         if not isinstance(other, int):
-            raise Exception(f'int expected, got {type(other)} instead.')
-        else:
-            self._action_count = other
+            raise TypeError(f'int expected, got {type(other)} instead.')
+
+        self._action_count = other
 
 
 class Game:
@@ -215,6 +214,12 @@ class Game:
         pygame.display.flip()
 
     def apply_action_on_car(self, action):
+        """
+        Executes the given action on the car.
+
+        :param action: The action to execute.
+        Must be a list with the length of possible action and filled with zeros, except at the index of the chosen action.
+        """
         # Action handler
         if action == GameAction.FORWARD:
             self.car.accelerate()
@@ -248,18 +253,24 @@ class Game:
 
         :return: True if the car has completely left the track, False otherwise.
         """
-        # TODO maybe only check car's middle point ? (can make shortcuts with the mask version)
-        rotated_image = pygame.transform.rotate(self.car.image, self.car.angle)
+        corners = self.car.get_corners(5)
 
-        # Masks
-        car_mask = pygame.mask.from_surface(rotated_image)
-        track_mask = pygame.mask.from_surface(self.track.image)
+        wheels_on_track = 0
 
-        # Calculate offset
-        rotated_rect = rotated_image.get_rect(center=(self.car.x_position, self.car.y_position))
-        offset = (0 - rotated_rect.topleft[0], 0 - rotated_rect.topleft[1])
+        for position in corners:
+            try:
+                if self.display.get_at(position) == Color.RED.value:
+                    print("REEEED")
+            except IndexError:
+                pass
+            try:
+                if self.display.get_at(position) == Color.TRACK.value:
+                    wheels_on_track += 1
+            # Ignore when a corner is out of the screen
+            except IndexError:
+                pass
 
-        return not bool(car_mask.overlap(track_mask, offset))
+        return wheels_on_track == 0
 
     def __get_checkpoint_reached(self) -> int:
         """
@@ -338,7 +349,9 @@ class Game:
             if self.track.image.get_at((x, y)) != Color.TRACK.value:
                 # FIXME debug
                 # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
-                return length
+                break
+
+        return length
 
     def get_rays(self) -> list[float]:
         """
@@ -355,6 +368,7 @@ class Game:
         return result
 
     def get_score(self) -> int:
+        """ Returns the sum of checkpoints reached in correct order. """
         return len(self.reached_checkpoints) + self.lap_count * len(self.track.checkpoints)
 
 

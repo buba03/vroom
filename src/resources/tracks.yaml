@@ -19,7 +19,7 @@ oval:
       y: 520
 
 simple:
-  size: 0.8
+  size: 0.7
   car_default_state:
     x_position: 550
     y_position: 510
