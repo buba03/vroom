@@ -28,7 +28,7 @@ class Agent:
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = Linear_QNet(11, 256, GameAction().action_count)
+        self.model = Linear_QNet(9, 256, GameAction().action_count)
         # self.model.load()
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
@@ -44,24 +44,14 @@ class Agent:
         :param game: The game to get the state of.
         :return: The state of the game as a numpy array.
         """
-        next_checkpoint = game.track.checkpoints[game.get_next_checkpoint()]
+        distances_from_next_checkpoint = game.get_distance_from_next_checkpoint()
         rays = game.get_rays()
 
         state = [
-            # Rays
             *rays,
-
-            # Move direction
             game.car.velocity,
             game.car.angle,
-
-            # TODO include distance from next checkpoint ?
-            # TODO include the threshold here ?
-            # Next checkpoint location
-            game.car.x_position < next_checkpoint[0],
-            game.car.x_position > next_checkpoint[0],
-            game.car.y_position < next_checkpoint[1],
-            game.car.y_position > next_checkpoint[1],
+            *distances_from_next_checkpoint
         ]
 
         return np.array(state, dtype=float)
