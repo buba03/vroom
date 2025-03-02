@@ -2,8 +2,14 @@
 
 import yaml
 import os
+import argparse
 
 PATH = os.path.join('src', 'resources')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--car', action='store', default='ferrari', choices=['ferrari', 'mclaren', 'f1'])
+parser.add_argument('--track', action='store', default='oval', choices=['oval', 'simple'])
+parser.add_argument('--fps', action='store', default='60000')
 
 
 class ConfigManager:
@@ -66,7 +72,7 @@ class ConfigManager:
 
         return self.values[track_id]
 
-    def get_game_attributes(self) -> tuple[int, dict]:
+    def get_game_attributes(self) -> dict:
         """
         Gets the game's attributes.
 
@@ -75,7 +81,7 @@ class ConfigManager:
         # Load yaml
         self._load_yaml(os.path.join(self._path, 'game.yaml'))
 
-        return self.values['fps'], self.values['display']
+        return self.values['display']
 
     def get_car_size_from_track(self, track_id: str) -> int:
         """
@@ -88,3 +94,6 @@ class ConfigManager:
         self._load_yaml(os.path.join(self._path, 'tracks.yaml'))
 
         return self.values[track_id]['size']
+
+    def get_argument(self, key: str) -> str:
+        return vars(parser.parse_args())[key]

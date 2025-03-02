@@ -1,7 +1,6 @@
 """ Module for game logic. When ran as main, the game will use the player controls. """
 
 import math
-import os
 
 import pygame
 
@@ -107,7 +106,7 @@ class GameAction:
 class Game:
     """ Class for game logic. """
 
-    def __init__(self, car: str = Car.FERRARI, track: str = Track.OVAL):
+    def __init__(self, car: str, track: str):
         """
         Initializes the game.
 
@@ -115,9 +114,9 @@ class Game:
         :param track: The name of the track inside the tracks.yaml file.
         """
         # yaml import
-        fps, display_attributes = ConfigManager().get_game_attributes()
+        display_attributes = ConfigManager().get_game_attributes()
         # FPS
-        self.fps = fps
+        self.fps = int(ConfigManager().get_argument('fps'))
 
         # For storing progress
         self.reached_checkpoints = set()
@@ -376,7 +375,9 @@ class Game:
 # When ran as main, the game will use player inputs.
 if __name__ == '__main__':
 
-    game = Game(Car.FERRARI, Track.SIMPLE)
+    car_arg = ConfigManager().get_argument('car')
+    track_arg = ConfigManager().get_argument('track')
+    game = Game(car_arg, track_arg)
 
     # Game loop
     while True:

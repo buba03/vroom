@@ -63,6 +63,12 @@ Activate the `.venv` and run the following command from the **project's root**:
 python src/agent.py
 ```
 
+## Arguments
+
+* `--car example_car_id` (optional): choose the car (see choices: `src/utils/config_manager.py`)
+* `--track example_track_id` (optional): choose the track (see choices: `src/utils/config_manager.py`)
+* `--fps example_number` (optional): set the FPS
+
 # Features
 
 lorem ipsum
@@ -104,17 +110,15 @@ The values are percentage based (between the `min_values` and `max_values`).
 
 Fill the values inside the `<>` brackets.
 
-### Class attribute
+### ConfigManager
 
-Go to the `src/car.py` file and add a new value according to your `car_id`.
-
-#### Format: `EXAMPLE = 'car_id'`
+Go to the `src/utils/config_manager.py` file and add a new choice to the `--car` argument according to your `car_id`.
 
 ### Usage
 
-When creating a new car, you can use the enumerator.
+When running a python file, include the `--car` argument with the value of your `car_id`.
 
-#### Example: `example_car = Car(Car.EXAMPLE)`
+#### Example: `python .\src\game.py --car car_id`
 
 ## New track
 
@@ -158,17 +162,15 @@ Fill the values inside the `<>` brackets.
 * `car_default_state`: the default position of the car when the game is reset.
 * `checkpoints`: at least 2 checkpoints are required
 
-### Class attribute
+### ConfigManager
 
-Go to the `src/track.py` file and add a new value according to your `track_id`.
-
-#### Format: `EXAMPLE = 'track_id'`
+Go to the `src/utils/config_manager.py` file and add a new choice to the `--track` argument according to your `track_id`.
 
 ### Usage
 
-When creating a new track, you can use the enumerator.
+When running a python file, include the `--track` argument with the value of your `track_id`.
 
-#### Example: `example_track = Track(Track.EXAMPLE)`
+#### Example: `python .\src\game.py --track track_id`
 
 ## Tests
 

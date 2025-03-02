@@ -66,10 +66,6 @@ def get_corner_positions(size: tuple, center: tuple, angle: float) -> list[tuple
 class Car:
     """ Represents a controllable car. """
 
-    FERRARI = 'ferrari'
-    MCLAREN = 'mclaren'
-    F1 = 'f1'
-
     def __init__(self, car_id: str):
         """
         Initializes the car object according to the car_id.

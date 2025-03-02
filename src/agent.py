@@ -8,6 +8,7 @@ import torch
 
 from game import Game, GameAction
 from model import Linear_QNet, QTrainer
+from utils.config_manager import ConfigManager
 
 # from helper import plot
 
@@ -144,8 +145,11 @@ if __name__ == '__main__':
     """
     # TODO add changeable game parameters
     agent = Agent()
-    game = Game()
     record = 0
+
+    car_arg = ConfigManager().get_argument('car')
+    track_arg = ConfigManager().get_argument('track')
+    game = Game(car_arg, track_arg)
 
     # plot_scores = []
     # plot_mean_scores = []
