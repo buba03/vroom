@@ -376,9 +376,12 @@ class Game:
             x = int(self.car.x_position + length * math.cos(angle))
             y = int(self.car.y_position + length * math.sin(angle))
             # Check if the ray hit the side of the track
-            if self.track.image.get_at((x, y)) != Color.TRACK.value:
-                # FIXME debug
-                # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
+            try:
+                if self.track.image.get_at((x, y)) != Color.TRACK.value:
+                    # FIXME debug
+                    # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
+                    break
+            except IndexError:
                 break
 
         return length
