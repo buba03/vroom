@@ -25,10 +25,7 @@ Activate the environment:
 ### Install dependencies
 
 ```shell
-pip install pygame
-pip install torch torchvision
-pip install matplotlib ipython
-pip install pyyaml
+pip install -r requirements.txt
 ```
 
 #### Explanation:
