@@ -27,7 +27,7 @@ class Agent:
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = Linear_QNet(11, 256, GameAction(-1).action_count)
+        self.model = Linear_QNet(11, 256, GameAction().action_count)
         # self.model.load()
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
@@ -120,7 +120,7 @@ class Agent:
         # random moves: tradeoff exploration / exploitation
         self.epsilon = 80 - self.number_of_games
         # Empty action
-        game_action = GameAction(-1)
+        game_action = GameAction()
         # Random
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 8)

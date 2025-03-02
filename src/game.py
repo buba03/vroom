@@ -33,13 +33,14 @@ class GameAction:
     TURN_LEFT = [0, 0, 0, 0, 0, 0, 0, 1, 0]
     FORWARD_LEFT = [0, 0, 0, 0, 0, 0, 0, 0, 1]
 
-    def __init__(self, action, action_count: int = 9):
+    def __init__(self, action=-1, action_count: int = 9):
         """
         Initializes a GameAction object.
 
         :param action: The action stored as a list of integers. The list is filled with zeros, only one int is 1.
         Can be given as a list - the length of the list is the action_count.
         Can be given as an integer meaning the index of the list, which should be a 1.
+        Default GameAction is a list of zeros.
         :param action_count: The number of possible actions. Default is 9.
         """
         # TODO into yaml

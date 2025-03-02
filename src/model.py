@@ -16,11 +16,6 @@ class Linear_QNet(nn.Module):
     - An input layer that accepts the state of the game.
     - One hidden layer with ReLU activation.
     - An output layer that produces the Q-values for each possible action.
-
-    Methods:
-        - forward: Propagates the input through the network to produce the output.
-        - save: Saves the current state of the model to a file.
-        - load: Loads the model state from a file if it exists.
     """
 
     def __init__(self, input_size: int, hidden_size: int, output_size: int):
@@ -48,23 +43,21 @@ class Linear_QNet(nn.Module):
 
     def save(self, file_name='model.pth'):
         """
-        Saves the current state of the model to a file in the model folder.
+        Saves the current state of the model to a file in the 'models' folder.
 
         :param file_name: The name of the file to save the model to.
         """
-        folder = 'model'
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        folder = 'models'
         file_name = os.path.join(folder, file_name)
         torch.save(self.state_dict(), file_name)
 
     def load(self, file_name='model.pth'):
         """
-        Loads the model state from a file if it exists from the model folder.
+        Loads the model state from a file if it exists from the 'models' folder.
 
         :param file_name: The name of the file to load the model from.
         """
-        folder = 'model'
+        folder = 'models'
         path = os.path.join(folder, file_name)
         if os.path.exists(path):
             self.load_state_dict(torch.load(path))
@@ -74,7 +67,7 @@ class Linear_QNet(nn.Module):
 
 
 class QTrainer:
-    """ A class for training the Q-learning model using the provided training data. """
+    """ A class for training and optimizing the Q-learning model. """
 
     def __init__(self, model, lr, gamma):
         """
