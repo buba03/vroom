@@ -43,6 +43,26 @@ def init_model(model_name):
     return model
 
 
+def init_model(model_name):
+    """
+    Initializes a new or existing Linear_QNet and returns it.
+
+    :param model_name: The name of the model inside the 'models' folder.
+    :return: The new or existing Linear_QNet.
+    """
+    model = Linear_QNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+
+    folder = 'models'
+    path = os.path.join(folder, model_name)
+    if os.path.exists(path) and model_name != "":
+        model.load(path)
+        print(f'Loaded model from {path}')
+    else:
+        print(f'No saved model found at {path}, starting from scratch.')
+
+    return model
+
+
 class Agent:
     """ Class for an agent to train the model by playing the game. """
 
