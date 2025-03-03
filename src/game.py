@@ -9,13 +9,11 @@ from track import Track
 from utils.enums import Direction, Color
 from utils.config_manager import ConfigManager
 
-# import random
-# import numpy as np
-
 # Initialize pygame
 pygame.init()
 # Constants
 FONT = pygame.font.SysFont('arial', 18)
+CHECKPOINT_THRESHOLD = 100
 
 
 class GameAction:
@@ -278,7 +276,7 @@ class Game:
 
         :return: The index of the reached checkpoint. -1 if none is reached.
         """
-        threshold = 100 * self.car_size * self.car_size
+        threshold = CHECKPOINT_THRESHOLD * self.car_size * self.car_size
 
         checkpoints = self.track.checkpoints
         car_position = int(self.car.x_position), int(self.car.y_position)
@@ -310,7 +308,7 @@ class Game:
         """
         checkpoint_x, checkpoint_y = self.track.checkpoints[self.get_next_checkpoint()]
         car_x, car_y = self.car.get_center_position()
-        threshold = 100 * self.car_size * self.car_size
+        threshold = CHECKPOINT_THRESHOLD * self.car_size * self.car_size
 
         # Calculate corners of the checkpoint using the threshold
         checkpoint_min_x = checkpoint_x - threshold
@@ -321,11 +319,11 @@ class Game:
         x_distance, y_distance = 0.0, 0.0
 
         # Calculate distances
-        if not (car_x > checkpoint_min_x and car_x < checkpoint_max_x):
+        if not (checkpoint_min_x < car_x < checkpoint_max_x):
             x_distance = min(abs(checkpoint_min_x - car_x), abs(checkpoint_max_x - car_x))
             if car_x > checkpoint_x:
                 x_distance *= -1
-        if not (car_y > checkpoint_min_y and car_y < checkpoint_max_y):
+        if not (checkpoint_min_y < car_y < checkpoint_max_y):
             y_distance = min(abs(checkpoint_min_y - car_y), abs(checkpoint_max_y - car_y))
             if car_y > checkpoint_y:
                 y_distance *= -1

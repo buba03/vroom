@@ -1,6 +1,7 @@
 """ Module for the model. """
 
 import os
+import time
 
 import numpy as np
 import torch
@@ -41,29 +42,23 @@ class Linear_QNet(nn.Module):
         x = self.linear2(x)
         return x
 
-    def save(self, file_name='model.pth'):
+    def save(self):
         """
         Saves the current state of the model to a file in the 'models' folder.
-
-        :param file_name: The name of the file to save the model to.
+        Uses the current timestamp.
         """
         folder = 'models'
+        file_name = 'model_' + str(time.time()) + '.pth'
         file_name = os.path.join(folder, file_name)
         torch.save(self.state_dict(), file_name)
 
-    def load(self, file_name='model.pth'):
+    def load(self, path):
         """
-        Loads the model state from a file if it exists from the 'models' folder.
+        Loads the model state from a file.
 
-        :param file_name: The name of the file to load the model from.
+        :param path: The path to the model.
         """
-        folder = 'models'
-        path = os.path.join(folder, file_name)
-        if os.path.exists(path):
-            self.load_state_dict(torch.load(path))
-            print(f"Loaded model from {path}")
-        else:
-            print(f"No saved model found at {path}. Starting from scratch.")
+        self.load_state_dict(torch.load(path, weights_only=False))
 
 
 class QTrainer:
@@ -94,10 +89,10 @@ class QTrainer:
         :param next_state: The state of the game after the action.
         :param done: Whether the game is over or not.
         """
-        state = torch.tensor(state, dtype=torch.float)
-        action = torch.tensor(action, dtype=torch.float)
-        reward = torch.tensor(reward, dtype=torch.float)
-        next_state = torch.tensor(next_state, dtype=torch.float)
+        state = torch.tensor(np.array(state), dtype=torch.float)
+        action = torch.tensor(np.array(action), dtype=torch.float)
+        reward = torch.tensor(np.array(reward), dtype=torch.float)
+        next_state = torch.tensor(np.array(next_state), dtype=torch.float)
 
         if len(state.shape) == 1:  # Handle single-sample input
             state = torch.unsqueeze(state, 0)

@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--car', action='store', default='ferrari', choices=['ferrari', 'mclaren', 'f1'])
 parser.add_argument('--track', action='store', default='oval', choices=['oval', 'simple'])
 parser.add_argument('--fps', action='store', default='60000')
+parser.add_argument('--model', action='store', default='')
 
 
 class ConfigManager:
@@ -95,5 +96,12 @@ class ConfigManager:
 
         return self.values[track_id]['size']
 
-    def get_argument(self, key: str) -> str:
+    @staticmethod
+    def get_argument(key: str) -> str:
+        """
+        Returns the value of the given argument.
+
+        :param key:
+        :return: The value of the argument as a string.
+        """
         return vars(parser.parse_args())[key]
