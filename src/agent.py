@@ -11,7 +11,7 @@ from game import Game, GameAction
 from model import Linear_QNet, QTrainer
 from utils.config_manager import ConfigManager
 
-# from helper import plot
+from utils.statistics import plot
 
 # TODO put this in a yaml
 MAX_MEMORY = 100_000
@@ -39,26 +39,6 @@ def init_model(model_name):
         print(f'Starting from scratch...')
     else:
         raise FileNotFoundError(f'No saved model found at {path}')
-
-    return model
-
-
-def init_model(model_name):
-    """
-    Initializes a new or existing Linear_QNet and returns it.
-
-    :param model_name: The name of the model inside the 'models' folder.
-    :return: The new or existing Linear_QNet.
-    """
-    model = Linear_QNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
-
-    folder = 'models'
-    path = os.path.join(folder, model_name)
-    if os.path.exists(path) and model_name != "":
-        model.load(path)
-        print(f'Loaded model from {path}')
-    else:
-        print(f'No saved model found at {path}, starting from scratch.')
 
     return model
 
@@ -184,10 +164,12 @@ if __name__ == '__main__':
     agent = Agent(model_arg)
     game = Game(car_arg, track_arg)
 
-    # plot_scores = []
-    # plot_mean_scores = []
-    # total_score = 0
     record = 0
+
+    # For plotting
+    plot_scores = []
+    plot_mean_scores = []
+    total_score = 0
 
     while True:
         # get old state
@@ -218,8 +200,9 @@ if __name__ == '__main__':
 
             print(f"Game: {agent.number_of_games}, Score: {score}, Record: {record}")
 
-            # plot_scores.append(score)
-            # total_score += score
-            # mean_score = total_score / agent.number_of_games
-            # plot_mean_scores.append(mean_score)
-            # plot(plot_scores, plot_mean_scores)
+            # For plotting
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.number_of_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
