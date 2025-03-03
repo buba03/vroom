@@ -1,6 +1,7 @@
 """ Module for the agent. When ran as main, the agent will start training. """
 
 import random
+import os
 from collections import deque
 
 import numpy as np
@@ -16,20 +17,46 @@ from utils.config_manager import ConfigManager
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
+STATE_ATTRIBUTE_COUNT = 9
+HIDDEN_LAYER = 256
+
+
+def init_model(model_name):
+    """
+    Initializes a new or existing Linear_QNet and returns it.
+
+    :param model_name: The name of the model inside the 'models' folder.
+    :return: The new or existing Linear_QNet.
+    """
+    model = Linear_QNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+
+    folder = 'models'
+    path = os.path.join(folder, model_name)
+    if os.path.exists(path) and model_name != "":
+        model.load(path)
+        print(f'Loaded model from {path}')
+    else:
+        print(f'No saved model found at {path}, starting from scratch.')
+
+    return model
 
 
 class Agent:
     """ Class for an agent to train the model by playing the game. """
 
-    def __init__(self):
-        """ Initializes the agent. """
+    def __init__(self, model_name: str = ""):
+        """
+        Initializes the agent with a new or existing model.
+
+        :param model_name: The name of the model inside the 'models' folder.
+        Default is an empty string, which will create a new Linear_QNet.
+        """
 
         self.number_of_games = 0
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = Linear_QNet(9, 256, GameAction().action_count)
-        # self.model.load()
+        self.model = init_model(model_name)
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
     @staticmethod
@@ -128,13 +155,7 @@ class Agent:
 
 # When ran as main, the agent will start the training process.
 if __name__ == '__main__':
-    # TODO extend docs
-    """
-    Starts the training process. Instantiates a fresh Agent and Game.
-
-    """
-    # TODO add changeable game parameters
-    agent = Agent()
+    agent = Agent('model_1740938831.9512718.pth')
     record = 0
 
     car_arg = ConfigManager().get_argument('car')
