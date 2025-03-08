@@ -1,8 +1,8 @@
-pygame
-torch
+pygame~=2.6.1
+torch~=2.6.0
 torchvision
-matplotlib
-ipython
-pyyaml
+matplotlib~=3.9.2
+ipython~=8.28.0
+pyyaml~=6.0.2
 
-numpy
+numpy~=1.26.3
