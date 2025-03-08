@@ -12,7 +12,7 @@ def set_image(path: str):
     :param path: Path to the image.
     :return: The image.
     """
-    img = pygame.image.load(path)
+    img = pygame.image.load(path).convert_alpha()
     # TODO fix hardcoded size
     return pygame.transform.scale(img, (900, 600))
 

@@ -120,16 +120,18 @@ class Game:
         self.reached_checkpoints = set()
         self.lap_count = None
 
+        # init display
+        self.display = pygame.display.set_mode((display_attributes['width'], display_attributes['height']))
+        pygame.display.set_caption('Vroom v1.0.0')
+
         # Car
         self.car = Car(car)
         # Track
         self.track = Track(track)
 
-        # init display
-        self.display = pygame.display.set_mode((display_attributes['width'], display_attributes['height']))
-        pygame.display.set_caption('Vroom v1.0.0')
         # Clock
         self.clock = pygame.time.Clock()
+
         # Set up elements
         self.car_size = ConfigManager().get_car_size_from_track(self.track.id)
         self.car.resize(self.car_size)
@@ -207,6 +209,7 @@ class Game:
         self.display.blit(text, [0, 100])
         text = FONT.render(f"Score: {str(self.get_score())}", True, Color.WHITE.value)
         self.display.blit(text, [0, 180])
+        self.get_rays()
 
         # Update
         pygame.display.flip()
@@ -362,7 +365,7 @@ class Game:
         :return: The length of the ray.
         """
         length = 0
-        step = 1
+        step = 5
         # Convert angle to radians and clockwise
         angle = math.radians(-(self.car.angle - angle_offset))
 
