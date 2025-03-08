@@ -40,7 +40,6 @@ class GameAction:
         Default GameAction is a list of zeros.
         :param action_count: The number of possible actions. Default is 9.
         """
-        # TODO into yaml
         self.action_count = action_count
 
         self.action = action
@@ -112,7 +111,7 @@ class Game:
         :param track: The name of the track inside the tracks.yaml file.
         """
         # yaml import
-        display_attributes = ConfigManager().get_game_attributes()
+        display_attributes = ConfigManager().get_game_attributes()['display']
         # FPS
         self.fps = int(ConfigManager().get_argument('fps'))
 
@@ -175,8 +174,6 @@ class Game:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
-        # TODO: plots?
 
         # Apply changes
         self.__update_display()

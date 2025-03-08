@@ -5,16 +5,16 @@ import pygame
 from utils.config_manager import ConfigManager
 
 
-def set_image(path: str):
+def set_image(path: str, size: tuple) -> pygame.image:
     """
     Load an image and scale it.
 
     :param path: Path to the image.
-    :return: The image.
+    :param size: The width and height of the image as a tuple.
+    :return: The scaled image.
     """
     img = pygame.image.load(path).convert_alpha()
-    # TODO fix hardcoded size
-    return pygame.transform.scale(img, (900, 600))
+    return pygame.transform.scale(img, size)
 
 
 def set_checkpoints(points: dict) -> list[tuple[float, float]]:
@@ -42,6 +42,9 @@ class Track:
 
         # yaml import
         track_attributes = ConfigManager().get_track_attributes(track_id)
+        width = ConfigManager().get_game_attributes()['display']['width']
+        height = ConfigManager().get_game_attributes()['display']['height']
+        self.size = width, height   # tuple
 
         # Set values from yaml
         self.car_size = track_attributes['size']
@@ -49,7 +52,7 @@ class Track:
         self.checkpoints = set_checkpoints(track_attributes['checkpoints'])
 
         # Set track image according to the track_id
-        self.image = set_image(ConfigManager().get_track_image_path(track_id))
+        self.image = set_image(ConfigManager().get_track_image_path(track_id), self.size)
 
     def get_car_default_state(self) -> tuple[float, float, float]:
         """

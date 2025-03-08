@@ -9,7 +9,7 @@ from utils.enums import Direction
 from utils.config_manager import ConfigManager
 from utils.enums import Color
 
-# TODO put this somewhere?
+
 HANDLING_VELOCITY_THRESHOLD = 4
 
 
@@ -77,6 +77,8 @@ class Car:
 
         # yaml import
         car_attributes = ConfigManager().get_car_attributes(car_id)
+        self.car_width = ConfigManager().get_game_attributes()['car']['width']
+        self.car_height = ConfigManager().get_game_attributes()['car']['height']
 
         # Set values from the yaml
         self.acceleration = car_attributes['acceleration']
@@ -87,8 +89,7 @@ class Car:
         self.max_reverse_speed = -car_attributes['max_reverse_speed']
 
         # Set surface representing the car
-        # TODO put width and height somewhere
-        self.car_surface = pygame.Surface((60, 30), pygame.SRCALPHA)
+        self.car_surface = pygame.Surface((self.car_width, self.car_height), pygame.SRCALPHA)
         self.car_surface.fill(Color.RED.value)
 
         # Position
@@ -108,8 +109,7 @@ class Car:
         global HANDLING_VELOCITY_THRESHOLD
 
         # Size
-        # TODO put width and height somewhere
-        self.car_surface = pygame.transform.scale(self.car_surface, (60 * multiplier, 30 * multiplier))
+        self.car_surface = pygame.transform.scale(self.car_surface, (self.car_width * multiplier, self.car_height * multiplier))
 
         # Attributes
         self.acceleration *= multiplier * multiplier
@@ -152,7 +152,6 @@ class Car:
 
         :param direction: The direction of the turn.
         """
-        global HANDLING_VELOCITY_THRESHOLD
         # Apply extra friction when turning
         self.apply_friction()
 

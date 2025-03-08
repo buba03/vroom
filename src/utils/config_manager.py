@@ -82,7 +82,7 @@ class ConfigManager:
         # Load yaml
         self._load_yaml(os.path.join(self._path, 'game.yaml'))
 
-        return self.values['display']
+        return self.values
 
     def get_car_size_from_track(self, track_id: str) -> int:
         """
