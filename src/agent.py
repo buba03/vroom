@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 from game import Game, GameAction
-from model import Linear_QNet, QTrainer
+from model import LinearQNet, QTrainer
 from utils.config_manager import ConfigManager
 
 from utils.statistics import plot
@@ -21,14 +21,26 @@ STATE_ATTRIBUTE_COUNT = 9
 HIDDEN_LAYER = 256
 
 
-def init_model(model_name):
+def get_device():
     """
-    Initializes a new or existing Linear_QNet and returns it.
+    Returns cuda if available, otherwise cpu.
+
+    :return: The device to use.
+    """
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return device
+
+
+def init_model(model_name: str, device: torch.device) -> torch.nn.Module:
+    """
+    Initializes a new or existing LinearQNet and returns it.
 
     :param model_name: The name of the model inside the 'models' folder.
-    :return: The new or existing Linear_QNet.
+    :param device: The device to move the model to.
+    :return: The new or existing LinearQNet.
     """
-    model = Linear_QNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+    model = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count, device)
 
     folder = 'models'
     path = os.path.join(folder, model_name)
@@ -40,7 +52,7 @@ def init_model(model_name):
     else:
         raise FileNotFoundError(f'No saved model found at {path}')
 
-    return model
+    return model.to(model.device)
 
 
 class Agent:
@@ -51,14 +63,18 @@ class Agent:
         Initializes the agent with a new or existing model.
 
         :param model_name: The name of the model inside the 'models' folder.
-        Default is an empty string, which will create a new Linear_QNet.
+        Default is an empty string, which will create a new LinearQNet.
         """
 
         self.number_of_games = 0
+
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
+
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = init_model(model_name)
+        self.device = get_device()
+
+        self.model = init_model(model_name, self.device)
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
     @staticmethod

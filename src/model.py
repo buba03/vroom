@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torch import nn, optim
 
 
-class Linear_QNet(nn.Module):
+class LinearQNet(nn.Module):
     """
     A simple fully connected neural network model for Q-learning.
 
@@ -19,17 +19,21 @@ class Linear_QNet(nn.Module):
     - An output layer that produces the Q-values for each possible action.
     """
 
-    def __init__(self, input_size: int, hidden_size: int, output_size: int):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int, device: torch.device):
         """
-        Initializes the Linear_QNet.
+        Initializes the LinearQNet.
 
         :param input_size: The size of the input layer (number of features in the state).
         :param hidden_size: The number of neurons in the hidden layer.
         :param output_size: The size of the output layer (number of possible actions).
+        :param output_size: The device to use.
         """
         super().__init__()
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
+
+        self.device = device
+        self.to(self.device)
 
     def forward(self, x):
         """
@@ -38,6 +42,7 @@ class Linear_QNet(nn.Module):
         :param x: The input tensor representing the state.
         :return: A tensor representing the Q-values for each possible action.
         """
+        x = x.to(self.device)
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
@@ -58,7 +63,7 @@ class Linear_QNet(nn.Module):
 
         :param path: The path to the model.
         """
-        self.load_state_dict(torch.load(path, weights_only=False))
+        self.load_state_dict(torch.load(path, map_location=self.device))
 
 
 class QTrainer:

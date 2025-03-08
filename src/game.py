@@ -258,6 +258,7 @@ class Game:
         for position in corners:
             try:
                 if self.display.get_at(position) == Color.RED.value:
+                    # TODO fix accidental corner off track detection
                     print("REEEED")
             except IndexError:
                 pass
