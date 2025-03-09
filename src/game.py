@@ -153,7 +153,7 @@ class Game:
         """
         # Get state before applying the action
         score = self.get_score()
-        reward = 0
+        reward = -1     # Start from -1 to encourage taking action
 
         # Apply action
         self.apply_action_on_car(action)
@@ -163,11 +163,12 @@ class Game:
         # Game over?
         done = self.__car_offtrack()
 
-        if self.get_score() > score:
-            reward += 100
-
-        if done:
-            reward = -100
+        # Score
+        reward += self.car.velocity / self.car.max_speed    # faster -> more reward
+        if self.get_score() > score:    # reached a new checkpoint
+            reward += 10
+        if done:                        # out of track
+            reward -= -10
 
         # Event handler
         for event in pygame.event.get():
@@ -206,7 +207,6 @@ class Game:
         self.display.blit(text, [0, 100])
         text = FONT.render(f"Score: {str(self.get_score())}", True, Color.WHITE.value)
         self.display.blit(text, [0, 180])
-        self.get_rays()
 
         # Update
         pygame.display.flip()
@@ -252,12 +252,13 @@ class Game:
         :return: True if the car has completely left the track, False otherwise.
         """
         corners = self.car.get_corners(5)
-
+        return False
         wheels_on_track = 0
 
         for position in corners:
             try:
                 if self.display.get_at(position) == Color.RED.value:
+                    # TODO fix accidental corner off track detection
                     print("REEEED")
             except IndexError:
                 pass
@@ -349,7 +350,7 @@ class Game:
             # Add
             self.reached_checkpoints.add(checkpoint)
             # Check lap progress
-            if len(self.reached_checkpoints) == 4 and checkpoint == 0:
+            if len(self.reached_checkpoints) == len(self.track.checkpoints) and checkpoint == 0:
                 # Reset if completed a lap
                 self.reached_checkpoints = set()
                 self.lap_count += 1
