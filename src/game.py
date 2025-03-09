@@ -166,9 +166,9 @@ class Game:
         # Score
         reward += self.car.velocity / self.car.max_speed    # faster -> more reward
         if self.get_score() > score:    # reached a new checkpoint
-            reward += 10
+            reward += 100
         if done:                        # out of track
-            reward -= -10
+            reward -= -100
 
         # Event handler
         for event in pygame.event.get():
@@ -252,8 +252,7 @@ class Game:
         :return: True if the car has completely left the track, False otherwise.
         """
         corners = self.car.get_corners(5)
-        return False
-        wheels_on_track = 0
+        wheels_off_track = 0
 
         for position in corners:
             try:
@@ -263,13 +262,12 @@ class Game:
             except IndexError:
                 pass
             try:
-                if self.display.get_at(position) == Color.TRACK.value:
-                    wheels_on_track += 1
-            # Ignore when a corner is out of the screen
-            except IndexError:
-                pass
+                if self.display.get_at(position) == Color.GRASS.value:
+                    wheels_off_track += 1
+            except IndexError:  # When a corner is out of the screen
+                wheels_off_track += 1
 
-        return wheels_on_track == 0
+        return wheels_off_track == 4
 
     def __get_checkpoint_reached(self) -> int:
         """

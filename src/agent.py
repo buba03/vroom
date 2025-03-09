@@ -54,7 +54,7 @@ class Agent:
         Default is an empty string, which will create a new Linear_QNet.
         """
 
-        self.number_of_games = 0
+        self.episode_count = 0
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
@@ -138,7 +138,7 @@ class Agent:
         :return: The action chosen by the model.
         """
         # random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.number_of_games
+        self.epsilon = 80 - self.episode_count
         # Empty action
         game_action = GameAction()
         # Random
@@ -165,6 +165,8 @@ if __name__ == '__main__':
     game = Game(car_arg, track_arg)
 
     record = 0
+    TIMEOUT_THRESHOLD = 15_000
+    counter = 0
 
     # For plotting
     plot_scores = []
@@ -172,6 +174,7 @@ if __name__ == '__main__':
     total_score = 0
 
     while True:
+        counter += 1
         # get old state
         state_old = agent.get_state(game)
 
@@ -188,21 +191,23 @@ if __name__ == '__main__':
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)
 
-        if done:
+        if done or counter > TIMEOUT_THRESHOLD:
             # train the long memory (experience replay), plot result
             game.reset()
-            agent.number_of_games += 1
+            agent.episode_count += 1
             agent.train_long_memory()
 
             if score > record:
                 record = score
                 agent.model.save()
 
-            print(f"Game: {agent.number_of_games}, Score: {score}, Record: {record}")
+            print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}")
 
             # For plotting
             plot_scores.append(score)
             total_score += score
-            mean_score = total_score / agent.number_of_games
+            mean_score = total_score / agent.episode_count
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
+
+            counter = 0
