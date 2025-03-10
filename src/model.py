@@ -1,7 +1,7 @@
 """ Module for the model. """
 
 import os
-import time
+from datetime import datetime
 
 import numpy as np
 import torch
@@ -41,24 +41,6 @@ class LinearQNet(nn.Module):
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
-
-    def save(self):
-        """
-        Saves the current state of the model to a file in the 'models' folder.
-        Uses the current timestamp.
-        """
-        folder = 'models'
-        file_name = 'model_' + str(time.time()) + '.pth'
-        file_name = os.path.join(folder, file_name)
-        torch.save(self.state_dict(), file_name)
-
-    def load(self, path):
-        """
-        Loads the model state from a file.
-
-        :param path: The path to the model.
-        """
-        self.load_state_dict(torch.load(path, weights_only=False))
 
 
 class QTrainer:
@@ -118,3 +100,31 @@ class QTrainer:
         loss = self.criterion(target, pred)
         loss.backward()
         self.optimizer.step()
+
+    def save(self):
+        """
+        Saves the current state of the model and optimizer to a .pth file in the 'models' folder.
+        Uses the current time to name the file.
+        """
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        folder = 'models'
+        file_name = 'model_' + timestamp + '.pth'
+        file_path = os.path.join(folder, file_name)
+
+        torch.save({
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict()
+        }, file_path)
+        print(f'Model saved to {file_path}')
+
+    def load(self, path):
+        """
+        Loads the model and optimizer from a file.
+
+        :param path: The path to the .pth file.
+        """
+        checkpoint = torch.load(path)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        print(f'Model and optimizer loaded from {path}')

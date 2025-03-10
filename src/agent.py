@@ -17,7 +17,8 @@ from utils.statistics import training_plot, debug_plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
-
+GAMMA = 0.95
+EPSILON = 1.0
 # EPSILON_DECAY = 0.9995  # ~4600 episodes
 EPSILON_DECAY = 0.9977  # ~1000 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
@@ -29,24 +30,25 @@ HIDDEN_LAYER = 256
 
 def init_model(model_name):
     """
-    Initializes a new or existing LinearQNet and returns it.
+    Initializes a new or existing LinearQNet and QTrainer and returns it.
 
     :param model_name: The name of the model inside the 'models' folder.
-    :return: The new or existing LinearQNet.
+    :return: The new or existing LinearQNet and QTrainer as a tuple.
     """
-    model = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+    network = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+    trainer = QTrainer(network, lr=LEARNING_RATE, gamma=GAMMA)
 
     folder = 'models'
     path = os.path.join(folder, model_name)
     if os.path.exists(path) and model_name != '':
-        model.load(path)
+        trainer.load(path)
         print(f'Loaded model from {path}')
     elif model_name == '':
         print(f'Starting from scratch...')
     else:
         raise FileNotFoundError(f'No saved model found at {path}')
 
-    return model
+    return network, trainer
 
 
 class Agent:
@@ -61,12 +63,11 @@ class Agent:
         """
 
         self.episode_count = 0
-        self.epsilon = 1.0  # for epsilon-greedy
+        self.epsilon = EPSILON  # for epsilon-greedy
         # TODO fine-tune gamma
-        self.gamma = 0.95  # discount rate (must be smaller than 1)
+        self.gamma = GAMMA  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
-        self.model = init_model(model_name)
-        self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
+        self.model, self.trainer = init_model(model_name)
 
     @staticmethod
     def get_state(game: Game) -> np.ndarray:
@@ -162,6 +163,7 @@ class Agent:
     def apply_epsilon_decay(self):
         self.epsilon = max(MIN_EPSILON, self.epsilon * EPSILON_DECAY)
 
+
 # When ran as main, the agent will start the training process.
 if __name__ == '__main__':
     car_arg = ConfigManager().get_argument('car')
@@ -209,11 +211,11 @@ if __name__ == '__main__':
 
             if score > record:
                 record = score
-                agent.model.save()
+                agent.trainer.save()
 
             print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}")
 
-            # For plotting
+            # Plotting
             plot_scores.append(score)
             total_score += score
             mean_score = total_score / agent.episode_count
