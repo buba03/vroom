@@ -121,9 +121,9 @@ class Car:
 
         HANDLING_VELOCITY_THRESHOLD *= multiplier
 
-    def get_center_position(self) -> tuple[float, float]:
+    def get_center_position(self) -> tuple[int, int]:
         """ The top left position of the car. """
-        return self.x_position, self.y_position
+        return int(self.x_position), int(self.y_position)
 
     def __set_velocity(self, acceleration: float):
         """

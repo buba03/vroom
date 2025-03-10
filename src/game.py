@@ -184,11 +184,12 @@ class Game:
     def __update_display(self):
         """ Update the display. """
 
+        # FIXME moved these to __car_offtrack, so it's not needed to call again (to increase FPS)
         # Background
-        self.display.fill(Color.GRASS.value)
+        # self.display.fill(Color.GRASS.value)
 
         # Items
-        self.track.draw(self.display)
+        # self.track.draw(self.display)
         self.car.draw(self.display)
 
         # Text
@@ -247,27 +248,15 @@ class Game:
 
     def __car_offtrack(self) -> bool:
         """
-        Checks whether the track and the car has collided.
+        Checks whether the car's center is on the track.
 
-        :return: True if the car has completely left the track, False otherwise.
+        :return: True if the car's center has left the track, False otherwise.
         """
-        corners = self.car.get_corners(5)
-        wheels_off_track = 0
+        # Draw background
+        self.display.fill(Color.GRASS.value)
+        self.track.draw(self.display)
 
-        for position in corners:
-            try:
-                if self.display.get_at(position) == Color.RED.value:
-                    # TODO fix accidental corner off track detection
-                    print("REEEED")
-            except IndexError:
-                pass
-            try:
-                if self.display.get_at(position) == Color.GRASS.value:
-                    wheels_off_track += 1
-            except IndexError:  # When a corner is out of the screen
-                wheels_off_track += 1
-
-        return wheels_off_track == 4
+        return self.display.get_at(self.car.get_center_position()) != Color.TRACK.value
 
     def __get_checkpoint_reached(self) -> int:
         """
