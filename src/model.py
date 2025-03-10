@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torch import nn, optim
 
 
-class Linear_QNet(nn.Module):
+class LinearQNet(nn.Module):
     """
     A simple fully connected neural network model for Q-learning.
 
@@ -21,7 +21,7 @@ class Linear_QNet(nn.Module):
 
     def __init__(self, input_size: int, hidden_size: int, output_size: int):
         """
-        Initializes the Linear_QNet.
+        Initializes the LinearQNet.
 
         :param input_size: The size of the input layer (number of features in the state).
         :param hidden_size: The number of neurons in the hidden layer.

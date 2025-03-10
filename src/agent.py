@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 from game import Game, GameAction
-from model import Linear_QNet, QTrainer
+from model import LinearQNet, QTrainer
 from utils.config_manager import ConfigManager
 
 from utils.statistics import plot
@@ -23,12 +23,12 @@ HIDDEN_LAYER = 256
 
 def init_model(model_name):
     """
-    Initializes a new or existing Linear_QNet and returns it.
+    Initializes a new or existing LinearQNet and returns it.
 
     :param model_name: The name of the model inside the 'models' folder.
-    :return: The new or existing Linear_QNet.
+    :return: The new or existing LinearQNet.
     """
-    model = Linear_QNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+    model = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
 
     folder = 'models'
     path = os.path.join(folder, model_name)
@@ -51,7 +51,7 @@ class Agent:
         Initializes the agent with a new or existing model.
 
         :param model_name: The name of the model inside the 'models' folder.
-        Default is an empty string, which will create a new Linear_QNet.
+        Default is an empty string, which will create a new LinearQNet.
         """
 
         self.episode_count = 0
