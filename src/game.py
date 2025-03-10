@@ -271,8 +271,8 @@ class Game:
 
         for i, checkpoint in enumerate(checkpoints):
             # FIXME debug
-            # pygame.draw.circle(self.display, Color.RED.value, checkpoint, threshold, width=3)
-            # pygame.draw.rect(self.display, Color.RED.value, pygame.rect.Rect(checkpoint[0] - threshold, checkpoint[1] - threshold, threshold*2, threshold*2))
+            # pygame.draw.circle(self.display, Color.DEBUG.value, checkpoint, threshold, width=3)
+            # pygame.draw.rect(self.display, Color.DEBUG.value, pygame.rect.Rect(checkpoint[0] - threshold, checkpoint[1] - threshold, threshold*2, threshold*2))
 
             # Check threshold (square)
             if abs(checkpoint[0] - car_position[0]) < threshold and abs(checkpoint[1] - car_position[1]) < threshold:
@@ -346,11 +346,11 @@ class Game:
         """
         Casts a ray from the middle of the car in the given angle. The ray stops when it hits the side of the track.
 
-        :param angle_offset: The offset of the ray's angle. Default is 0.
+        :param angle_offset: The offset of the ray's angle. Default is 0, which means the current angle of the car.
         :return: The length of the ray.
         """
         length = 0
-        step = 5
+        step = 2
         # Convert angle to radians and clockwise
         angle = math.radians(-(self.car.angle - angle_offset))
 
@@ -365,24 +365,33 @@ class Game:
             try:
                 if self.track.image.get_at((x, y)) != Color.TRACK.value:
                     # FIXME debug
-                    # pygame.draw.line(self.display, (255, 0, 0), (self.car.x_position, self.car.y_position), (x, y))
+                    # pygame.draw.line(self.display, Color.DEBUG.value, (self.car.x_position, self.car.y_position), (x, y))
                     break
             except IndexError:
                 break
 
         return length
 
-    def get_rays(self) -> list[float]:
+    def get_rays(self, normalize: bool = False) -> list[float]:
         """
         Casts all the rays and calculates their lengths.
+        Can optionally normalize the distances based on the current display's maximum possible distance.
 
-        :return: List of the calculated distances counterclockwise.
+        :param normalize: Whether the values should be normalized between 0 and 1 or not. Default is False.
+        :return: List of the calculated distances.
         """
         angles = [-90, -45, 0, 45, 90]
         result = []
 
         for angle in angles:
-            result.append(self.__cast_ray(angle))
+            distance = self.__cast_ray(angle)
+            if normalize:
+                # Calculate distance for the current display
+                width, height = self.display.get_size()
+                max_distance = math.sqrt(width ** 2 + height ** 2)
+                # Normalize (0 to 1)
+                distance = distance / max_distance
+            result.append(distance)
 
         return result
 
