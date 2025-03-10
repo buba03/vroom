@@ -24,7 +24,7 @@ EPSILON_DECAY = 0.9977  # ~1000 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
 MIN_EPSILON = 0.1
 
-STATE_ATTRIBUTE_COUNT = 9
+STATE_ATTRIBUTE_COUNT = 10
 HIDDEN_LAYER = 256
 
 
@@ -75,21 +75,37 @@ class Agent:
         Returns the state of the game.
         It includes:
             the length of the cast rays,
-            the car's velocity and angle,
+            the car's normalized velocity and angle,
             the car's positional relation to the next checkpoint.
 
         :param game: The game to get the state of.
         :return: The state of the game as a numpy array.
         """
-        distances_from_next_checkpoint = game.get_distance_from_next_checkpoint()
-        rays = game.get_rays()
+        # Get normalized rays (0 to 1)
+        rays = game.get_rays(normalize=True)
+
+        # Normalize velocity (0 to 1)
+        velocity = game.car.velocity / game.car.max_speed
+
+        # Separate angle into sin and cos values
+        angle_sin = np.sin(np.radians(game.car.angle))
+        angle_cos = np.cos(np.radians(game.car.angle))
+
+        # Normalize distances (0 to 1)
+        x_distance, y_distance = game.get_distance_from_next_checkpoint()
+        x_distance = x_distance / game.display.get_size()[0]
+        y_distance = y_distance / game.display.get_size()[1]
 
         state = [
             *rays,
-            game.car.velocity,
-            game.car.angle,
-            *distances_from_next_checkpoint
+            velocity,
+            angle_sin,
+            angle_cos,
+            x_distance,
+            y_distance
         ]
+
+        print(state)
 
         return np.array(state, dtype=float)
 
