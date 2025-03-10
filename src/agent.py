@@ -11,12 +11,18 @@ from game import Game, GameAction
 from model import LinearQNet, QTrainer
 from utils.config_manager import ConfigManager
 
-from utils.statistics import plot
+from utils.statistics import training_plot, debug_plot
 
 # TODO put this in a yaml
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
+
+# EPSILON_DECAY = 0.9995  # ~4600 episodes
+EPSILON_DECAY = 0.9977  # ~1000 episodes
+# EPSILON_DECAY = 0.99    # ~230 episodes
+MIN_EPSILON = 0.1
+
 STATE_ATTRIBUTE_COUNT = 9
 HIDDEN_LAYER = 256
 
@@ -55,8 +61,9 @@ class Agent:
         """
 
         self.episode_count = 0
-        self.epsilon = 0  # randomness
-        self.gamma = 0.9  # discount rate (must be smaller than 1)
+        self.epsilon = 1.0  # for epsilon-greedy
+        # TODO fine-tune gamma
+        self.gamma = 0.95  # discount rate (must be smaller than 1)
         self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
         self.model = init_model(model_name)
         self.trainer = QTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
@@ -137,15 +144,13 @@ class Agent:
         :param state: The state of the game.
         :return: The action chosen by the model.
         """
-        # random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.episode_count
         # Empty action
         game_action = GameAction()
-        # Random
-        if random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 8)
+
+        # Epsilon-greedy (exploration / exploitation)
+        if random.uniform(0, 1) < self.epsilon:
+            move = random.randint(0, game_action.action_count - 1)
             game_action.action = move
-        # Model
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)  # executes the model.forward function
@@ -154,6 +159,8 @@ class Agent:
 
         return game_action.action
 
+    def apply_epsilon_decay(self):
+        self.epsilon = max(MIN_EPSILON, self.epsilon * EPSILON_DECAY)
 
 # When ran as main, the agent will start the training process.
 if __name__ == '__main__':
@@ -165,13 +172,15 @@ if __name__ == '__main__':
     game = Game(car_arg, track_arg)
 
     record = 0
-    TIMEOUT_THRESHOLD = 15_000
+    MAX_STEPS = 15_000
     counter = 0
 
     # For plotting
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
+    plot_epsilon =[]
+    plot_steps = []
 
     while True:
         counter += 1
@@ -191,10 +200,11 @@ if __name__ == '__main__':
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)
 
-        if done or counter > TIMEOUT_THRESHOLD:
+        if done or counter > MAX_STEPS:
             # train the long memory (experience replay), plot result
             game.reset()
             agent.episode_count += 1
+            agent.apply_epsilon_decay()
             agent.train_long_memory()
 
             if score > record:
@@ -208,6 +218,10 @@ if __name__ == '__main__':
             total_score += score
             mean_score = total_score / agent.episode_count
             plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+            training_plot(plot_scores, plot_mean_scores)
+
+            plot_epsilon.append(agent.epsilon)
+            plot_steps.append(counter / MAX_STEPS)
+            debug_plot(plot_epsilon, plot_steps)
 
             counter = 0
