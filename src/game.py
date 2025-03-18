@@ -164,6 +164,7 @@ class Game:
         done = self.__car_offtrack()
 
         # Score
+        # TODO reward for getting closer to the checkpoint?
         reward += self.car.velocity / self.car.max_speed    # faster -> more reward
         if self.get_score() > score:    # reached a new checkpoint
             reward += 100

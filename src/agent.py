@@ -105,8 +105,6 @@ class Agent:
             y_distance
         ]
 
-        print(state)
-
         return np.array(state, dtype=float)
 
     def remember(self, state: np.ndarray, action: list[int], reward: float, next_state: np.ndarray, done: bool):

@@ -62,7 +62,7 @@ class QTrainer:
 
     def train_step(self, state: np.ndarray, action: list[int], reward: float, next_state: np.ndarray, done: bool):
         """
-        Performs a single training step using the provided training data.
+        Performs a single or multiple training steps using the provided training data.
         Parameters can be single values or lists.
 
         :param state: The state of the game before the action.
