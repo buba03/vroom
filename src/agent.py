@@ -17,7 +17,7 @@ from utils.statistics import training_plot, debug_plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
-GAMMA = 0.95
+GAMMA = 0.995
 EPSILON = 1.0
 # EPSILON_DECAY = 0.9995  # ~4600 episodes
 EPSILON_DECAY = 0.9977  # ~1000 episodes
@@ -63,10 +63,10 @@ class Agent:
         """
 
         self.episode_count = 0
-        self.epsilon = EPSILON  # for epsilon-greedy
+        self.epsilon = EPSILON
         # TODO fine-tune gamma
-        self.gamma = GAMMA  # discount rate (must be smaller than 1)
-        self.memory = deque(maxlen=MAX_MEMORY)  # if full -> popleft
+        self.gamma = GAMMA
+        self.memory = deque(maxlen=MAX_MEMORY)  # if full -> automatic popleft
         self.model, self.trainer = init_model(model_name)
 
     @staticmethod
@@ -164,11 +164,13 @@ class Agent:
 
         # Epsilon-greedy (exploration / exploitation)
         if random.uniform(0, 1) < self.epsilon:
+            # Exploration
             move = random.randint(0, game_action.action_count - 1)
             game_action.action = move
         else:
+            # Exploitation
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model(state0)  # executes the model.forward function
+            prediction = self.model(state0)
             move = torch.argmax(prediction).item()
             game_action.action = move
 
@@ -187,42 +189,45 @@ if __name__ == '__main__':
     agent = Agent(model_arg)
     game = Game(car_arg, track_arg)
 
-    record = 0
     MAX_STEPS = 15_000
+    record = 0
     counter = 0
 
     # For plotting
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
-    plot_epsilon =[]
+    plot_epsilon = []
     plot_steps = []
 
     while True:
         counter += 1
-        # get old state
+        # Current state
         state_old = agent.get_state(game)
 
-        # get move
+        # Choose action
         final_move = agent.get_action(state_old)
 
-        # perform move and get new state
+        # Apply action
         reward, done, score = game.play_step(final_move)
+        # Get the new state
         state_new = agent.get_state(game)
 
-        # train short memory
+        # Single training step
         agent.train_short_memory(state_old, final_move, reward, state_new, done)
-
-        # remember
+        # Store experience for 'experience replay'
         agent.remember(state_old, final_move, reward, state_new, done)
 
         if done or counter > MAX_STEPS:
-            # train the long memory (experience replay), plot result
             game.reset()
             agent.episode_count += 1
+
+            # Epsilon decay
             agent.apply_epsilon_decay()
+            # Experience replay
             agent.train_long_memory()
 
+            # Save model, if improved
             if score > record:
                 record = score
                 agent.trainer.save()

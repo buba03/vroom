@@ -8,6 +8,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn, optim
 
+TIMESTAMP = datetime.now()
+
 
 class LinearQNet(nn.Module):
     """
@@ -32,12 +34,6 @@ class LinearQNet(nn.Module):
         self.linear2 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        """
-        Forward pass through the network.
-
-        :param x: The input tensor representing the state.
-        :return: A tensor representing the Q-values for each possible action.
-        """
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
@@ -60,42 +56,29 @@ class QTrainer:
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
-    def train_step(self, state: np.ndarray, action: list[int], reward: float, next_state: np.ndarray, done: bool):
-        """
-        Performs a single or multiple training steps using the provided training data.
-        Parameters can be single values or lists.
-
-        :param state: The state of the game before the action.
-        :param action: The action taken.
-        :param reward: The reward after the action.
-        :param next_state: The state of the game after the action.
-        :param done: Whether the game is over or not.
-        """
+    def train_step(self, state, action, reward, next_state, done):
         state = torch.tensor(np.array(state), dtype=torch.float)
         action = torch.tensor(np.array(action), dtype=torch.float)
         reward = torch.tensor(np.array(reward), dtype=torch.float)
         next_state = torch.tensor(np.array(next_state), dtype=torch.float)
 
-        if len(state.shape) == 1:  # Handle single-sample input
+        if len(state.shape) == 1:
             state = torch.unsqueeze(state, 0)
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
             next_state = torch.unsqueeze(next_state, 0)
             done = (done,)
 
-        # Predicted Q-values from the current state
         pred = self.model(state)
-
-        # Update Q-values using the Bellman equation
         target = pred.clone()
-        for idx in range(len(done)):
-            Q_new = reward[idx]
-            if not done[idx]:
-                Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
 
-            target[idx][torch.argmax(action).item()] = Q_new
+        for i in range(len(done)):
+            Q_new = reward[i]
+            if not done[i]:
+                Q_new = reward[i] + self.gamma * torch.max(self.model(next_state[i]))
 
-        # Backpropagation
+            target[i][torch.argmax(action).item()] = Q_new
+
         self.optimizer.zero_grad()
         loss = self.criterion(target, pred)
         loss.backward()
@@ -106,7 +89,7 @@ class QTrainer:
         Saves the current state of the model and optimizer to a .pth file in the 'models' folder.
         Uses the current time to name the file.
         """
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = TIMESTAMP.strftime("%Y-%m-%d_%H-%M-%S")
 
         folder = 'models'
         file_name = 'model_' + timestamp + '.pth'

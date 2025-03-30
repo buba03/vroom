@@ -185,12 +185,11 @@ class Game:
     def __update_display(self):
         """ Update the display. """
 
-        # FIXME moved these to __car_offtrack, so it's not needed to call again (to increase FPS)
         # Background
-        # self.display.fill(Color.GRASS.value)
+        self.display.fill(Color.GRASS.value)
 
         # Items
-        # self.track.draw(self.display)
+        self.track.draw(self.display)
         self.car.draw(self.display)
 
         # Text
@@ -253,11 +252,8 @@ class Game:
 
         :return: True if the car's center has left the track, False otherwise.
         """
-        # Draw background
-        self.display.fill(Color.GRASS.value)
-        self.track.draw(self.display)
 
-        return self.display.get_at(self.car.get_center_position()) != Color.TRACK.value
+        return self.track.image.get_at(self.car.get_center_position()) != Color.TRACK.value
 
     def __get_checkpoint_reached(self) -> int:
         """
@@ -387,7 +383,7 @@ class Game:
         for angle in angles:
             distance = self.__cast_ray(angle)
             if normalize:
-                # Calculate distance for the current display
+                # Calculate max distance for the current display
                 width, height = self.display.get_size()
                 max_distance = math.sqrt(width ** 2 + height ** 2)
                 # Normalize (0 to 1)

@@ -1,10 +1,10 @@
 # Prerequisites
 
+* **Windows 10** or above
 * Python **3.11.4**
     * `virtualenv` python package
         * to install, run: `pip install virtualenv`
 * pip **24.0**
-* **Windows 10** or above
 
 # Setup
 
@@ -69,9 +69,9 @@ python src/agent.py
 * `--track example_track_id` (optional): choose the track (see choices: `src/utils/config_manager.py`)
 * `--fps example_number` (optional): set the FPS
 
-# Features
+# For developers
 
-lorem ipsum
+This section explains some key features of the project, that are only important for developing.
 
 ## New car
 
