@@ -1,7 +1,7 @@
 """ Module for the agent. When ran as main, the agent will start training. """
 
-import random
 import os
+import random
 from collections import deque
 
 import numpy as np
@@ -10,7 +10,6 @@ import torch
 from game import Game, GameAction
 from model import LinearQNet, QTrainer
 from utils.config_manager import ConfigManager
-
 from utils.statistics import training_plot, debug_plot
 
 # TODO put this in a yaml
@@ -44,7 +43,7 @@ def init_model(model_name):
         trainer.load(path)
         print(f'Loaded model from {path}')
     elif model_name == '':
-        print(f'Starting from scratch...')
+        print('Starting from scratch...')
     else:
         raise FileNotFoundError(f'No saved model found at {path}')
 
@@ -177,6 +176,7 @@ class Agent:
         return game_action.action
 
     def apply_epsilon_decay(self):
+        """ Applies epsilon decay to reduce exploration over time. """
         self.epsilon = max(MIN_EPSILON, self.epsilon * EPSILON_DECAY)
 
 

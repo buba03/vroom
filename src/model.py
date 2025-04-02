@@ -34,6 +34,15 @@ class LinearQNet(nn.Module):
         self.linear2 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
+        """
+        Forward pass through the Linear Q-network.
+
+        This function processes the input state and produces predicted Q-values
+        for each possible action.
+
+        :param x: The input tensor representing the state.
+        :return: A tensor containing the predicted Q-values for all actions.
+        """
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
@@ -57,11 +66,23 @@ class QTrainer:
         self.criterion = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):
+        """
+        Performs a single training step using the Bellman equation.
+        Performs backpropagation.
+
+        :param state: The state of the game before the action.
+        :param action: The action taken.
+        :param reward: The reward after the action.
+        :param next_state: The state of the game after the action.
+        :param done: Whether the game is over or not.
+        """
+        # Convert to tensor
         state = torch.tensor(np.array(state), dtype=torch.float)
         action = torch.tensor(np.array(action), dtype=torch.float)
         reward = torch.tensor(np.array(reward), dtype=torch.float)
         next_state = torch.tensor(np.array(next_state), dtype=torch.float)
 
+        # Convert single sample to 2D
         if len(state.shape) == 1:
             state = torch.unsqueeze(state, 0)
             action = torch.unsqueeze(action, 0)
@@ -69,9 +90,11 @@ class QTrainer:
             next_state = torch.unsqueeze(next_state, 0)
             done = (done,)
 
+        # Get prediction
         pred = self.model(state)
         target = pred.clone()
 
+        # Apply Bellman-equation
         for i in range(len(done)):
             Q_new = reward[i]
             if not done[i]:
@@ -79,6 +102,7 @@ class QTrainer:
 
             target[i][torch.argmax(action).item()] = Q_new
 
+        # Backpropagation
         self.optimizer.zero_grad()
         loss = self.criterion(target, pred)
         loss.backward()

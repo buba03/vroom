@@ -5,10 +5,9 @@ import math
 import numpy as np
 import pygame
 
-from utils.enums import Direction
 from utils.config_manager import ConfigManager
 from utils.enums import Color
-
+from utils.enums import Direction
 
 HANDLING_VELOCITY_THRESHOLD = 4
 
@@ -43,7 +42,7 @@ def get_corner_positions(size: tuple, center: tuple, angle: float) -> list[tuple
     """
     w, h = size
     cx, cy = center
-    theta = -math.radians(angle)   # Negative, because math and pygame use angles differently
+    theta = -math.radians(angle)  # Negative, because math and pygame use angles differently
 
     # Corner positions (without rotating)
     corners = [
@@ -109,7 +108,10 @@ class Car:
         global HANDLING_VELOCITY_THRESHOLD
 
         # Size
-        self.car_surface = pygame.transform.scale(self.car_surface, (self.car_width * multiplier, self.car_height * multiplier))
+        self.car_surface = pygame.transform.scale(
+            self.car_surface,
+            (self.car_width * multiplier, self.car_height * multiplier)
+        )
 
         # Attributes
         self.acceleration *= multiplier * multiplier
@@ -172,7 +174,7 @@ class Car:
         min_narrowing_threshold = 0.75
         max_narrowing_threshold = 0.95
         normalized_velocity = min_narrowing_threshold + normalized_velocity * (
-                    max_narrowing_threshold - min_narrowing_threshold)
+                max_narrowing_threshold - min_narrowing_threshold)
 
         # Change turning angle if getting faster
         angle = min_threshold * self.handling * normalized_velocity if abs(self.velocity) > min_threshold else angle

@@ -1,8 +1,8 @@
 """ Module for configuration management. """
 
-import yaml
 import os
 import argparse
+import yaml
 
 PATH = os.path.join('src', 'resources')
 
@@ -35,9 +35,21 @@ class ConfigManager:
             self.values = yaml.safe_load(file)
 
     def get_car_image_path(self, car_id: str) -> str:
+        """
+        Gets the image path for the car.
+
+        :param car_id: The ID of the car to get the image for.
+        :return: The path of the car's image.
+        """
         return os.path.join(self._path, 'cars', car_id + '.png')
 
     def get_track_image_path(self, track_id: str) -> str:
+        """
+        Gets the image path for the track.
+
+        :param track_id: The ID of the track to get the image for.
+        :return: The path of the track's image.
+        """
         return os.path.join(self._path, 'tracks', track_id + '.png')
 
     def get_car_attributes(self, car_id: str) -> dict:

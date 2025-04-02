@@ -6,8 +6,8 @@ import pygame
 
 from car import Car
 from track import Track
-from utils.enums import Direction, Color
 from utils.config_manager import ConfigManager
+from utils.enums import Direction, Color
 
 # Initialize pygame
 pygame.init()
@@ -153,7 +153,7 @@ class Game:
         """
         # Get state before applying the action
         score = self.get_score()
-        reward = -1     # Start from -1 to encourage taking action
+        reward = -1  # Start from -1 to encourage taking action
 
         # Apply action
         self.apply_action_on_car(action)
@@ -165,10 +165,10 @@ class Game:
 
         # Score
         # TODO reward for getting closer to the checkpoint?
-        reward += self.car.velocity / self.car.max_speed    # faster -> more reward
-        if self.get_score() > score:    # reached a new checkpoint
+        reward += self.car.velocity / self.car.max_speed  # faster -> more reward
+        if self.get_score() > score:  # reached a new checkpoint
             reward += 100
-        if done:                        # out of track
+        if done:  # out of track
             reward -= -100
 
         # Event handler
@@ -304,11 +304,11 @@ class Game:
         x_distance, y_distance = 0.0, 0.0
 
         # Calculate distances
-        if not (checkpoint_min_x < car_x < checkpoint_max_x):
+        if not checkpoint_min_x < car_x < checkpoint_max_x:
             x_distance = min(abs(checkpoint_min_x - car_x), abs(checkpoint_max_x - car_x))
             if car_x > checkpoint_x:
                 x_distance *= -1
-        if not (checkpoint_min_y < car_y < checkpoint_max_y):
+        if not checkpoint_min_y < car_y < checkpoint_max_y:
             y_distance = min(abs(checkpoint_min_y - car_y), abs(checkpoint_max_y - car_y))
             if car_y > checkpoint_y:
                 y_distance *= -1
