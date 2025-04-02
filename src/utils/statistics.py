@@ -1,8 +1,18 @@
-import matplotlib.pyplot as plt
+""" Module for plotting useful data during training. """
+
 import os
+import matplotlib.pyplot as plt
 
 
 def training_plot(scores, mean_scores, save_filename='training_plot.png'):
+    """
+    Plots the training progress, showing scores and mean scores over time.
+    Saves the plot after each call, overwriting the previous if necessary.
+
+    :param scores: List of scores.
+    :param mean_scores: List of mean scores.
+    :param save_filename: Filename (inside the 'plots' folder) to save the plot as an image. Default is 'training_plot.png'
+    """
     plt.clf()
 
     plt.title('Training Progress')
@@ -28,6 +38,14 @@ def training_plot(scores, mean_scores, save_filename='training_plot.png'):
 
 
 def debug_plot(epsilon, steps_taken, save_filename='debug_plot.png'):
+    """
+    Plots debug values such as epsilon and steps taken per game.
+    Saves the plot after each call, overwriting the previous if necessary.
+
+    :param epsilon: List of epsilon values.
+    :param steps_taken: List of steps taken in each game.
+    :param save_filename: Filename (inside the 'plots' folder) to save the plot as an image. Default is 'debug_plot.png'
+    """
     plt.clf()
 
     plt.title('Debug Values')

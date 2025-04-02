@@ -44,7 +44,7 @@ class Track:
         track_attributes = ConfigManager().get_track_attributes(track_id)
         width = ConfigManager().get_game_attributes()['display']['width']
         height = ConfigManager().get_game_attributes()['display']['height']
-        self.size = width, height   # tuple
+        self.size = width, height  # tuple
 
         # Set values from yaml
         self.car_size = track_attributes['size']
