@@ -153,7 +153,12 @@ class Game:
         """
         # Get state before applying the action
         score = self.get_score()
-        reward = -1  # Start from -1 to encourage taking action
+        # TODO reward for taking action?
+        reward = 0
+        # reward = -1  # Start from -1 to encourage taking action
+        # Current distance from next checkpoint
+        x_distance, y_distance = game.get_distance_from_next_checkpoint()
+        distance = math.sqrt(x_distance ** 2 + y_distance ** 2)
 
         # Apply action
         self.apply_action_on_car(action)
@@ -164,8 +169,10 @@ class Game:
         done = self.__car_offtrack()
 
         # Score
-        # TODO reward for getting closer to the checkpoint?
-        reward += self.car.velocity / self.car.max_speed  # faster -> more reward
+        x_distance, y_distance = game.get_distance_from_next_checkpoint()
+        if distance > math.sqrt(x_distance ** 2 + y_distance ** 2):  # closer to the next checkpoint
+            reward += 1
+        # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
         if self.get_score() > score:  # reached a new checkpoint
             reward += 100
         if done:  # out of track
