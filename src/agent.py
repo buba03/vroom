@@ -53,13 +53,18 @@ def init_model(model_name):
 class Agent:
     """ Class for an agent to train the model by playing the game. """
 
-    def __init__(self, model_name: str = ""):
+    def __init__(self, model_name: str = '', eval: bool = False):
         """
         Initializes the agent with a new or existing model.
 
         :param model_name: The name of the model inside the 'models' folder.
         Default is an empty string, which will create a new LinearQNet.
+        :param eval: Whether the agent should only evaluate the model or start a training.
+        If True, model_name is required. Default is False.
         """
+        self.eval = eval
+        if eval and model_name == '':
+            raise RuntimeError('Eval mode requires a model name.')
 
         self.episode_count = 0
         self.epsilon = EPSILON
@@ -185,64 +190,88 @@ if __name__ == '__main__':
     car_arg = ConfigManager().get_argument('car')
     track_arg = ConfigManager().get_argument('track')
     model_arg = ConfigManager().get_argument('model')
+    eval_mode = ConfigManager.get_argument("eval")
 
-    agent = Agent(model_arg)
+    agent = Agent(model_arg, eval_mode)
     game = Game(car_arg, track_arg)
 
-    MAX_STEPS = 15_000
-    record = 0
-    counter = 0
+    if not agent.eval:
+        MAX_STEPS = 15_000
+        record = 0
+        steps = 0
 
-    # For plotting
-    plot_scores = []
-    plot_mean_scores = []
-    total_score = 0
-    plot_epsilon = []
-    plot_steps = []
+        # For plotting
+        plot_scores = []
+        plot_mean_scores = []
+        total_score = 0
+        plot_epsilon = []
+        plot_steps = []
 
-    while True:
-        counter += 1
-        # Current state
-        state_old = agent.get_state(game)
+        print('Starting training...')
+        while True:
+            steps += 1
+            # Current state
+            state_old = agent.get_state(game)
 
-        # Choose action
-        final_move = agent.get_action(state_old)
+            # Choose action
+            final_move = agent.get_action(state_old)
 
-        # Apply action
-        reward, done, score = game.play_step(final_move)
-        # Get the new state
-        state_new = agent.get_state(game)
+            # Apply action
+            reward, done, score = game.play_step(final_move)
+            # Get the new state
+            state_new = agent.get_state(game)
 
-        # Single training step
-        agent.train_short_memory(state_old, final_move, reward, state_new, done)
-        # Store experience for 'experience replay'
-        agent.remember(state_old, final_move, reward, state_new, done)
+            # Single training step
+            agent.train_short_memory(state_old, final_move, reward, state_new, done)
+            # Store experience for 'experience replay'
+            agent.remember(state_old, final_move, reward, state_new, done)
 
-        if done or counter > MAX_STEPS:
-            game.reset()
-            agent.episode_count += 1
+            if done or steps > MAX_STEPS:
+                game.reset()
+                agent.episode_count += 1
 
-            # Epsilon decay
-            agent.apply_epsilon_decay()
-            # Experience replay
-            agent.train_long_memory()
+                # Epsilon decay
+                agent.apply_epsilon_decay()
+                # Experience replay
+                agent.train_long_memory()
 
-            # Save model, if improved
-            if score > record:
-                record = score
-                agent.trainer.save()
+                # Save model, if improved
+                if score > record:
+                    record = score
+                    agent.trainer.save()
 
-            print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}")
+                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}")
 
-            # Plotting
-            plot_scores.append(score)
-            total_score += score
-            mean_score = total_score / agent.episode_count
-            plot_mean_scores.append(mean_score)
-            training_plot(plot_scores, plot_mean_scores)
+                # Plotting
+                plot_scores.append(score)
+                total_score += score
+                mean_score = total_score / agent.episode_count
+                plot_mean_scores.append(mean_score)
+                training_plot(plot_scores, plot_mean_scores)
 
-            plot_epsilon.append(agent.epsilon)
-            plot_steps.append(counter / MAX_STEPS)
-            debug_plot(plot_epsilon, plot_steps)
+                plot_epsilon.append(agent.epsilon)
+                plot_steps.append(steps / MAX_STEPS)
+                debug_plot(plot_epsilon, plot_steps)
 
-            counter = 0
+                steps = 0
+
+    else:
+        print('Running in evaluation mode...')
+        agent.epsilon = 0.0     # only exploitation
+        num_eval_episodes = 10
+
+        for episode in range(num_eval_episodes):
+            total_score = 0
+
+            while True:
+                state = agent.get_state(game)
+                action = agent.get_action(state)
+                _, done, score = game.play_step(action)
+
+                total_score += score
+
+                if done:
+                    game.reset()
+                    print(f'Evaluation Episode {episode + 1}: Score = {total_score}')
+                    break
+

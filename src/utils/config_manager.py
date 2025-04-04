@@ -11,6 +11,7 @@ parser.add_argument('--car', action='store', default='ferrari', choices=['ferrar
 parser.add_argument('--track', action='store', default='oval', choices=['oval', 'simple'])
 parser.add_argument('--fps', action='store', default='60000')
 parser.add_argument('--model', action='store', default='')
+parser.add_argument('--eval', action='store_true')
 
 
 class ConfigManager:
