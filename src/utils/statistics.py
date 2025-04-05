@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def training_plot(scores, mean_scores, save_filename='training_plot.png'):
+def training_plot(scores, mean_scores, rewards, mean_rewards, save_filename='training_plot.png'):
     """
     Plots the training progress, showing scores and mean scores over time.
     Saves the plot after each call, overwriting the previous if necessary.
@@ -21,11 +21,15 @@ def training_plot(scores, mean_scores, save_filename='training_plot.png'):
 
     plt.plot(scores, label="Score")
     plt.plot(mean_scores, label="Mean Score")
+    plt.plot(rewards, label="Rewards")
+    plt.plot(mean_rewards, label="Mean Rewards")
 
     plt.ylim(ymin=0)
     plt.xlim(xmin=0)
-    plt.text(len(scores) - 1, scores[-1], str(scores[-1]))
-    plt.text(len(mean_scores) - 1, mean_scores[-1], str(mean_scores[-1]))
+    plt.text(len(rewards) - 1, rewards[-1], str(rewards[-1]))
+    plt.text(len(mean_rewards) - 1, mean_rewards[-1], str(mean_rewards[-1]))
+    plt.text(len(rewards) - 1, rewards[-1], str(rewards[-1]))
+    plt.text(len(mean_rewards) - 1, mean_rewards[-1], str(mean_rewards[-1]))
 
     plt.legend()
     plt.grid(True)

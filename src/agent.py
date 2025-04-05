@@ -204,12 +204,15 @@ if __name__ == '__main__':
         plot_scores = []
         plot_mean_scores = []
         total_score = 0
+        current_total_reward = 0
+        plot_rewards = []
+        plot_mean_rewards = []
+        total_rewards = 0
         plot_epsilon = []
         plot_steps = []
 
         print('Starting training...')
         while True:
-            steps += 1
             # Current state
             state_old = agent.get_state(game)
 
@@ -225,6 +228,9 @@ if __name__ == '__main__':
             agent.train_short_memory(state_old, final_move, reward, state_new, done)
             # Store experience for 'experience replay'
             agent.remember(state_old, final_move, reward, state_new, done)
+
+            steps += 1
+            current_total_reward += reward
 
             if done or steps > MAX_STEPS:
                 game.reset()
@@ -245,19 +251,24 @@ if __name__ == '__main__':
                 # Plotting
                 plot_scores.append(score)
                 total_score += score
-                mean_score = total_score / agent.episode_count
-                plot_mean_scores.append(mean_score)
-                training_plot(plot_scores, plot_mean_scores)
+                plot_mean_scores.append(total_score / agent.episode_count)
+
+                plot_rewards.append(current_total_reward)
+                total_rewards += current_total_reward
+                plot_mean_rewards.append(total_rewards / agent.episode_count)
+
+                training_plot(plot_scores, plot_mean_scores, plot_rewards, plot_mean_rewards)
 
                 plot_epsilon.append(agent.epsilon)
                 plot_steps.append(steps / MAX_STEPS)
                 debug_plot(plot_epsilon, plot_steps)
 
                 steps = 0
+                current_total_reward = 0
 
     else:
         print('Running in evaluation mode...')
-        agent.epsilon = 0.0     # only exploitation
+        agent.epsilon = 0.0  # only exploitation
         num_eval_episodes = 10
 
         for episode in range(num_eval_episodes):
@@ -267,6 +278,7 @@ if __name__ == '__main__':
                 state = agent.get_state(game)
                 action = agent.get_action(state)
                 _, done, score = game.play_step(action)
+                print(action)
 
                 total_score += score
 
@@ -274,4 +286,3 @@ if __name__ == '__main__':
                     game.reset()
                     print(f'Evaluation Episode {episode + 1}: Score = {total_score}')
                     break
-

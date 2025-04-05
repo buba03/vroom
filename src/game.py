@@ -157,7 +157,7 @@ class Game:
         reward = 0
         # reward = -1  # Start from -1 to encourage taking action
         # Current distance from next checkpoint
-        x_distance, y_distance = game.get_distance_from_next_checkpoint()
+        x_distance, y_distance = self.get_distance_from_next_checkpoint()
         distance = math.sqrt(x_distance ** 2 + y_distance ** 2)
 
         # Apply action
@@ -169,14 +169,14 @@ class Game:
         done = self.__car_offtrack()
 
         # Score
-        x_distance, y_distance = game.get_distance_from_next_checkpoint()
+        x_distance, y_distance = self.get_distance_from_next_checkpoint()
         if distance > math.sqrt(x_distance ** 2 + y_distance ** 2):  # closer to the next checkpoint
-            reward += 1
+            reward += 0.1
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
         if self.get_score() > score:  # reached a new checkpoint
             reward += 100
         if done:  # out of track
-            reward -= -100
+            reward -= 100
 
         # Event handler
         for event in pygame.event.get():
