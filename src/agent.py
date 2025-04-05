@@ -24,7 +24,8 @@ EPSILON_DECAY = 0.9977  # ~1000 episodes
 MIN_EPSILON = 0.1
 
 STATE_ATTRIBUTE_COUNT = 10
-HIDDEN_LAYER = 256
+HIDDEN_LAYER_1 = 256
+HIDDEN_LAYER_2 = 256
 
 
 def init_model(model_name):
@@ -34,7 +35,7 @@ def init_model(model_name):
     :param model_name: The name of the model inside the 'models' folder.
     :return: The new or existing LinearQNet and QTrainer as a tuple.
     """
-    network = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER, GameAction().action_count)
+    network = LinearQNet(STATE_ATTRIBUTE_COUNT, HIDDEN_LAYER_1, HIDDEN_LAYER_2, GameAction().action_count)
     trainer = QTrainer(network, lr=LEARNING_RATE, gamma=GAMMA)
 
     folder = 'models'

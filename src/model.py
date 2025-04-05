@@ -21,17 +21,19 @@ class LinearQNet(nn.Module):
     - An output layer that produces the Q-values for each possible action.
     """
 
-    def __init__(self, input_size: int, hidden_size: int, output_size: int):
+    def __init__(self, input_size: int, hidden_size_1: int, hidden_size_2: int, output_size: int):
         """
         Initializes the LinearQNet.
 
         :param input_size: The size of the input layer (number of features in the state).
-        :param hidden_size: The number of neurons in the hidden layer.
+        :param hidden_size_1: The number of neurons in the first hidden layer.
+        :param hidden_size_2: The number of neurons in the second hidden layer.
         :param output_size: The size of the output layer (number of possible actions).
         """
         super().__init__()
-        self.linear1 = nn.Linear(input_size, hidden_size)
-        self.linear2 = nn.Linear(hidden_size, output_size)
+        self.linear1 = nn.Linear(input_size, hidden_size_1)
+        self.linear2 = nn.Linear(hidden_size_1, hidden_size_2)
+        self.linear3 = nn.Linear(hidden_size_2, output_size)
 
     def forward(self, x):
         """
@@ -44,7 +46,8 @@ class LinearQNet(nn.Module):
         :return: A tensor containing the predicted Q-values for all actions.
         """
         x = F.relu(self.linear1(x))
-        x = self.linear2(x)
+        x = F.relu(self.linear2(x))
+        x = self.linear3(x)
         return x
 
 
