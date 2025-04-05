@@ -176,7 +176,7 @@ class Game:
         if self.get_score() > score:  # reached a new checkpoint
             reward += 100
         if done:  # out of track
-            reward -= 100
+            reward += -100
 
         # Event handler
         for event in pygame.event.get():

@@ -2,5 +2,5 @@ display:
   width: 900
   height: 600
 car:
-  width: 60
-  height: 30
+  width: 50
+  height: 25
