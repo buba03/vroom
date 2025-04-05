@@ -1,18 +1,18 @@
 min_values:
-  acceleration: 0.01
-  braking: 0.005
-  handling: 0.01
-  max_speed: 3
-  max_reverse_speed: 1.5
+  acceleration: 1
+  braking: 0.5
+  handling: 0.04
+  max_speed: 9
+  max_reverse_speed: 4
   friction: 0
 
 max_values:
-  acceleration: 1
-  braking: 0.5
-  handling: 4
-  max_speed: 20
-  max_reverse_speed: 10
-  friction: 0.3
+  acceleration: 4
+  braking: 2.5
+  handling: 12
+  max_speed: 60
+  max_reverse_speed: 15
+  friction: 1
 
 
 ferrari:
@@ -21,7 +21,7 @@ ferrari:
   handling: 30
   max_speed: 50
   max_reverse_speed: 40
-  friction: 30
+  friction: 50
 
 mclaren:
   acceleration: 30
@@ -29,7 +29,7 @@ mclaren:
   handling: 30
   max_speed: 50
   max_reverse_speed: 40
-  friction: 30
+  friction: 50
 
 f1:
   acceleration: 30
@@ -37,4 +37,4 @@ f1:
   handling: 30
   max_speed: 70
   max_reverse_speed: 10
-  friction: 30
+  friction: 50

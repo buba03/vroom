@@ -9,7 +9,7 @@ from utils.config_manager import ConfigManager
 from utils.enums import Color
 from utils.enums import Direction
 
-HANDLING_VELOCITY_THRESHOLD = 4
+HANDLING_VELOCITY_THRESHOLD = 3
 
 
 def rotate_vector(vector, angle_degrees: float):
