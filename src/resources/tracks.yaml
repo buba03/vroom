@@ -1,9 +1,38 @@
 oval:
   size: 1
-  car_default_state:
-    x_position: 805
-    y_position: 335
-    angle: 90
+  car_default_states:
+    0:
+      x: 800
+      y: 250
+      angle: 90
+    1:
+      x: 675
+      y: 125
+      angle: 140
+    2:
+      x: 455
+      y: 80
+      angle: 180
+    3:
+      x: 220
+      y: 135
+      angle: 215
+    4:
+      x: 100
+      y: 305
+      angle: 270
+    5:
+      x: 240
+      y: 475
+      angle: 335
+    6:
+      x: 460
+      y: 510
+      angle: 0
+    7:
+      x: 690
+      y: 460
+      angle: 40
   checkpoints:
     0:
       x: 675

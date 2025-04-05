@@ -270,7 +270,7 @@ class Game:
         """
         threshold = CHECKPOINT_THRESHOLD * self.car_size * self.car_size
 
-        checkpoints = self.track.checkpoints
+        checkpoints = self.track.get_checkpoints()
         car_position = int(self.car.x_position), int(self.car.y_position)
 
         for i, checkpoint in enumerate(checkpoints):
@@ -290,7 +290,7 @@ class Game:
 
         :return: The index of the checkpoint.
         """
-        return len(self.reached_checkpoints) % len(self.track.checkpoints)
+        return len(self.reached_checkpoints) % len(self.track.get_checkpoints())
 
     def get_distance_from_next_checkpoint(self) -> tuple[float, float]:
         """
@@ -298,7 +298,7 @@ class Game:
 
         :return: The distances for the x and y positions as a float tuple.
         """
-        checkpoint_x, checkpoint_y = self.track.checkpoints[self.get_next_checkpoint()]
+        checkpoint_x, checkpoint_y = self.track.get_checkpoints()[self.get_next_checkpoint()]
         car_x, car_y = self.car.get_center_position()
         threshold = CHECKPOINT_THRESHOLD * self.car_size * self.car_size
 
@@ -341,7 +341,7 @@ class Game:
             # Add
             self.reached_checkpoints.add(checkpoint)
             # Check lap progress
-            if len(self.reached_checkpoints) == len(self.track.checkpoints) and checkpoint == 0:
+            if len(self.reached_checkpoints) == len(self.track.get_checkpoints()) and checkpoint == 0:
                 # Reset if completed a lap
                 self.reached_checkpoints = set()
                 self.lap_count += 1
@@ -401,7 +401,7 @@ class Game:
 
     def get_score(self) -> int:
         """ Returns the sum of checkpoints reached in correct order. """
-        return len(self.reached_checkpoints) + self.lap_count * len(self.track.checkpoints)
+        return len(self.reached_checkpoints) + self.lap_count * len(self.track.get_checkpoints())
 
 
 # When ran as main, the game will use player inputs.
