@@ -23,7 +23,7 @@ EPSILON_DECAY = 0.9977  # ~1000 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
 MIN_EPSILON = 0.1
 
-STATE_ATTRIBUTE_COUNT = 10
+STATE_ATTRIBUTE_COUNT = 8
 HIDDEN_LAYER_1 = 256
 HIDDEN_LAYER_2 = 256
 
@@ -104,8 +104,8 @@ class Agent:
         state = [
             *rays,
             velocity,
-            angle_sin,
-            angle_cos,
+            # angle_sin,
+            # angle_cos,
             x_distance,
             y_distance
         ]
@@ -191,9 +191,9 @@ if __name__ == '__main__':
     car_arg = ConfigManager().get_argument('car')
     track_arg = ConfigManager().get_argument('track')
     model_arg = ConfigManager().get_argument('model')
-    eval_mode = ConfigManager.get_argument("eval")
+    eval_mode = ConfigManager.get_argument('eval')
 
-    agent = Agent(model_arg, eval_mode)
+    agent = Agent(model_arg, bool(eval_mode))
     game = Game(car_arg, track_arg)
 
     if not agent.eval:
