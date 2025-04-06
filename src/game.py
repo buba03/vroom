@@ -170,14 +170,13 @@ class Game:
 
         # Score
         x_distance, y_distance = self.get_distance_from_next_checkpoint()
-        if distance > math.sqrt(x_distance ** 2 + y_distance ** 2):  # closer to the next checkpoint
-            reward += 0.1
+        if distance < math.sqrt(x_distance ** 2 + y_distance ** 2):  # further from the next checkpoint
+            reward -= 0.1
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
         if self.get_score() > score:  # reached a new checkpoint
             reward += 100
         if done:  # out of track
             reward += -100
-
         # Event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -200,6 +199,7 @@ class Game:
         self.car.draw(self.display)
 
         # Text
+        # FIXME debug
         text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
         self.display.blit(text, [0, 0])
         text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
@@ -346,7 +346,7 @@ class Game:
                 self.reached_checkpoints = set()
                 self.lap_count += 1
 
-    def __cast_ray(self, angle_offset: int = 0) -> float:
+    def __cast_ray(self, angle_offset: int = 0, max_length: int = 200) -> float:
         """
         Casts a ray from the middle of the car in the given angle. The ray stops when it hits the side of the track.
 
@@ -359,7 +359,7 @@ class Game:
         angle = math.radians(-(self.car.angle - angle_offset))
 
         # Calculate length, max value: display's width + height
-        while length < self.display.get_size()[0] + self.display.get_size()[1]:
+        while length < max_length:
             # Gradually increase the length
             length += step
             # Coordinates of the end of the ray
@@ -372,7 +372,7 @@ class Game:
                     # pygame.draw.line(self.display, Color.DEBUG.value, (self.car.x_position, self.car.y_position), (x, y))
                     break
             except IndexError:
-                break
+                continue
 
         return length
 
@@ -384,17 +384,15 @@ class Game:
         :param normalize: Whether the values should be normalized between 0 and 1 or not. Default is False.
         :return: List of the calculated distances.
         """
-        angles = [-90, -45, 0, 45, 90]
+        angles = [-135, -90, -45, 0, 45, 90, 135, 180]
+        max_lengths = [200, 200, 200, 200, 200, 200, 200, 200]
         result = []
 
-        for angle in angles:
-            distance = self.__cast_ray(angle)
+        for i in range(len(angles)):
+            distance = self.__cast_ray(angles[i], max_lengths[i])
             if normalize:
-                # Calculate max distance for the current display
-                width, height = self.display.get_size()
-                max_distance = math.sqrt(width ** 2 + height ** 2)
                 # Normalize (0 to 1)
-                distance = distance / max_distance
+                distance = distance / max_lengths[i]
             result.append(distance)
 
         return result
