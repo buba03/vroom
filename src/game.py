@@ -207,14 +207,14 @@ class Game:
 
         # Text
         # FIXME debug
-        text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
+        text = FONT.render("Velocity: " + str(round(self.car.velocity, 1)), True, Color.WHITE.value)
         self.display.blit(text, [0, 0])
-        text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
+        text = FONT.render("Angle: " + str(round(self.car.angle, 1)), True, Color.WHITE.value)
         self.display.blit(text, [0, 20])
         text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True,
                            Color.WHITE.value)
         self.display.blit(text, [0, 40])
-        text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
+        text = FONT.render(f"FPS: {str(int(self.clock.get_fps()))}", True, Color.WHITE.value)
         self.display.blit(text, [0, 60])
         text = FONT.render(f"Progress: {str(self.reached_checkpoints)}", True, Color.WHITE.value)
         self.display.blit(text, [0, 80])
