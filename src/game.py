@@ -118,6 +118,7 @@ class Game:
         # For storing progress
         self.reached_checkpoints = set()
         self.lap_count = None
+        self.shortest_distance_from_checkpoint = None
 
         # init display
         self.display = pygame.display.set_mode((display_attributes['width'], display_attributes['height']))
@@ -143,6 +144,7 @@ class Game:
 
         self.reached_checkpoints = set()
         self.lap_count = 0
+        self.shortest_distance_from_checkpoint = math.inf
 
     def play_step(self, action: list[int]) -> tuple[float, bool, float]:
         """
@@ -153,30 +155,35 @@ class Game:
         """
         # Get state before applying the action
         score = self.get_score()
-        # TODO reward for taking action?
-        reward = 0
-        # reward = -1  # Start from -1 to encourage taking action
-        # Current distance from next checkpoint
-        x_distance, y_distance = self.get_distance_from_next_checkpoint()
-        distance = math.sqrt(x_distance ** 2 + y_distance ** 2)
+        reward = -0.5  # Start from negative to encourage taking action
+
+        # Distance from next checkpoint before action
+        x, y = self.get_distance_from_next_checkpoint()
+        previous_distance = math.sqrt(x ** 2 + y ** 2)
+        # Angle difference next checkpoint before action
+        previous_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
 
         # Apply action
         self.apply_action_on_car(action)
         # Update progression
         self.__check_progression()
-
         # Game over?
         done = self.__car_offtrack()
 
+        current_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
+        ANGLE_THRESHOLD = 30  # Reward, if the angle difference is less than this value
         # Score
-        x_distance, y_distance = self.get_distance_from_next_checkpoint()
-        if distance < math.sqrt(x_distance ** 2 + y_distance ** 2):  # further from the next checkpoint
-            reward -= 0.1
+        if self.__is_closer_to_next_checkpoint():
+            reward += 1  # closer to the next checkpoint
+        if previous_angle_difference > current_angle_difference or current_angle_difference < ANGLE_THRESHOLD:
+            reward += 1  # direction is better to the next checkpoint
+        # TODO reward for speed?
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
-        if self.get_score() > score:  # reached a new checkpoint
-            reward += 100
-        if done:  # out of track
-            reward += -100
+        if self.get_score() > score:
+            reward += 100  # reached a new checkpoint
+        if done:
+            reward += -150  # out of track
+
         # Event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -322,6 +329,39 @@ class Game:
 
         return x_distance, y_distance
 
+    def get_angle_difference_from_checkpoint(self, checkpoint_index: int, normalize: bool = False) -> float:
+        """
+        Calculates the difference between the angle of the car, and the direction of the given checkpoint.
+
+        :param checkpoint_index: The index of the checkpoint.
+        :return: The difference between the two angles.
+        """
+        # Points
+        x1, y1 = self.car.get_center_position()
+        x2, y2 = self.track.get_checkpoints()[checkpoint_index]
+        # Vector
+        dx = x2 - x1
+        dy = y1 - y2
+        # Angle in radians
+        angle_radians = math.atan2(dy, dx)
+        # Convert to degrees
+        angle_degrees = math.degrees(angle_radians)
+        # Change interval (previously: -180 to 180, after: 0 to 360)
+        angle_degrees = (angle_degrees + 360) % 360
+
+        # Calculate difference
+        difference = abs(angle_degrees - self.car.angle)
+        difference = min(difference, 360 - difference)
+
+        # FIXME debug
+        # print(f'Line: {angle_degrees}, car: {self.car.angle}, difference: {difference}')
+        # pygame.draw.line(self.display, Color.DEBUG.value, (x1, y1), (x2, y2))
+
+        if normalize:
+            difference /= 180
+
+        return difference
+
     def __check_progression(self):
         """ Checks the car's progression on the track. Updates reached checkpoints and lap counts. """
 
@@ -340,11 +380,27 @@ class Game:
                 return
             # Add
             self.reached_checkpoints.add(checkpoint)
+            # Reset shortest distance from checkpoint
+            self.shortest_distance_from_checkpoint = math.inf
             # Check lap progress
             if len(self.reached_checkpoints) == len(self.track.get_checkpoints()) and checkpoint == 0:
                 # Reset if completed a lap
                 self.reached_checkpoints = set()
                 self.lap_count += 1
+
+    def __is_closer_to_next_checkpoint(self) -> bool:
+        """
+        Check whether the car is closer to the next checkpoint than at any other point during the run.
+        :return: Whether the car is closer or not.
+        """
+        x, y = self.get_distance_from_next_checkpoint()
+        distance = math.sqrt(x ** 2 + y ** 2)
+
+        if distance < self.shortest_distance_from_checkpoint or distance == 0:
+            self.shortest_distance_from_checkpoint = distance
+            return True
+
+        return False
 
     def __cast_ray(self, angle_offset: int = 0, max_length: int = 200) -> float:
         """

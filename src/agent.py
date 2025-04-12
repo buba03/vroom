@@ -18,12 +18,12 @@ BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
 GAMMA = 0.995
 EPSILON = 1.0
-# EPSILON_DECAY = 0.9995  # ~4600 episodes
-EPSILON_DECAY = 0.9977  # ~1000 episodes
+EPSILON_DECAY = 0.9995  # ~4600 episodes
+# EPSILON_DECAY = 0.9977  # ~1000 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
 MIN_EPSILON = 0.1
 
-STATE_ATTRIBUTE_COUNT = 11
+STATE_ATTRIBUTE_COUNT = 12
 HIDDEN_LAYER_1 = 256
 HIDDEN_LAYER_2 = 256
 
@@ -89,12 +89,11 @@ class Agent:
         # Get normalized rays (0 to 1)
         rays = game.get_rays(normalize=True)
 
+        # Normalized angle difference from next checkpoint
+        angle_difference = game.get_angle_difference_from_checkpoint(game.get_next_checkpoint(), normalize=True)
+
         # Normalize velocity (0 to 1)
         velocity = game.car.velocity / game.car.max_speed
-
-        # Separate angle into sin and cos values
-        angle_sin = np.sin(np.radians(game.car.angle))
-        angle_cos = np.cos(np.radians(game.car.angle))
 
         # Normalize distances (0 to 1)
         x_distance, y_distance = game.get_distance_from_next_checkpoint()
@@ -102,10 +101,11 @@ class Agent:
         y_distance = y_distance / game.display.get_size()[1]
 
         state = [
+            # TODO more state attributes
+            # can see checkpoint? (maybe front 3 rays?)
             *rays,
+            angle_difference,
             velocity,
-            # angle_sin,
-            # angle_cos,
             x_distance,
             y_distance
         ]
@@ -247,16 +247,16 @@ if __name__ == '__main__':
                     record = score
                     agent.trainer.save()
 
-                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}")
+                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}, Last 100 game avg. score: {sum(plot_rewards[-100:]) // 100}")
 
                 # Plotting
                 plot_scores.append(score)
                 total_score += score
                 plot_mean_scores.append(total_score / agent.episode_count)
 
-                plot_rewards.append(current_total_reward)
+                plot_rewards.append(current_total_reward / 100)
                 total_rewards += current_total_reward
-                plot_mean_rewards.append(total_rewards / agent.episode_count)
+                plot_mean_rewards.append(total_rewards / 100 / agent.episode_count)
 
                 training_plot(plot_scores, plot_mean_scores, plot_rewards, plot_mean_rewards)
 

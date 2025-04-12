@@ -19,17 +19,17 @@ def training_plot(scores, mean_scores, rewards, mean_rewards, save_filename='tra
     plt.xlabel('Number of Games')
     plt.ylabel('Score')
 
+    plt.plot(rewards, label="Rewards")
     plt.plot(scores, label="Score")
     plt.plot(mean_scores, label="Mean Score")
-    plt.plot(rewards, label="Rewards")
-    plt.plot(mean_rewards, label="Mean Rewards")
+    # plt.plot(mean_rewards, label="Mean Rewards")
 
     plt.ylim(ymin=0)
     plt.xlim(xmin=0)
+    plt.text(len(scores) - 1, scores[-1], str(scores[-1]))
+    plt.text(len(mean_scores) - 1, mean_scores[-1], str(mean_scores[-1]))
     plt.text(len(rewards) - 1, rewards[-1], str(rewards[-1]))
-    plt.text(len(mean_rewards) - 1, mean_rewards[-1], str(mean_rewards[-1]))
-    plt.text(len(rewards) - 1, rewards[-1], str(rewards[-1]))
-    plt.text(len(mean_rewards) - 1, mean_rewards[-1], str(mean_rewards[-1]))
+    # plt.text(len(mean_rewards) - 1, mean_rewards[-1], str(mean_rewards[-1]))
 
     plt.legend()
     plt.grid(True)
