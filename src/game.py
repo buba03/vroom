@@ -233,6 +233,9 @@ class Game:
         :param action: The action to execute.
         Must be a list with the length of possible action and filled with zeros, except at the index of the chosen action.
         """
+        # Slowly approach the default speed
+        self.car.approach_default_speed()
+
         # Action handler
         if action == GameAction.FORWARD:
             self.car.accelerate()
