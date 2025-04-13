@@ -171,11 +171,11 @@ class Game:
         done = self.__car_offtrack()
 
         current_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
-        ANGLE_THRESHOLD = 30  # Reward, if the angle difference is less than this value
+        ANGLE_THRESHOLD = 20  # Reward, if the angle difference is less than this value
         # Score
         if self.__is_closer_to_next_checkpoint():
             reward += 1  # closer to the next checkpoint
-        if previous_angle_difference > current_angle_difference or current_angle_difference < ANGLE_THRESHOLD:
+        if current_angle_difference < ANGLE_THRESHOLD:
             reward += 1  # direction is better to the next checkpoint
         # TODO reward for speed?
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward

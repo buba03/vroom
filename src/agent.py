@@ -23,7 +23,7 @@ EPSILON_DECAY = 0.9995  # ~4600 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
 MIN_EPSILON = 0.1
 
-STATE_ATTRIBUTE_COUNT = 12
+STATE_ATTRIBUTE_COUNT = 10
 HIDDEN_LAYER_1 = 256
 HIDDEN_LAYER_2 = 256
 
@@ -106,8 +106,8 @@ class Agent:
             *rays,
             angle_difference,
             velocity,
-            x_distance,
-            y_distance
+            # x_distance,
+            # y_distance
         ]
 
         return np.array(state, dtype=float)
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     game = Game(car_arg, track_arg)
 
     if not agent.eval:
-        MAX_STEPS = 15_000
+        MAX_STEPS = 10_000
         record = 0
         steps = 0
 
@@ -247,7 +247,7 @@ if __name__ == '__main__':
                     record = score
                     agent.trainer.save()
 
-                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}, Last 100 game avg. score: {sum(plot_rewards[-100:]) // 100}")
+                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}, Last 100 game avg. score: {sum(plot_scores[-100:]) // 100}")
 
                 # Plotting
                 plot_scores.append(score)
