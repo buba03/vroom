@@ -245,7 +245,7 @@ if __name__ == '__main__':
                 # Save model, if improved
                 if score > record:
                     record = score
-                    agent.trainer.save()
+                    agent.trainer.save(f'{record}pts')
 
                 print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}, Last 100 game avg. score: {sum(plot_scores[-100:]) // 100}")
 
