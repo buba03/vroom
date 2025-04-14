@@ -4,14 +4,16 @@ min_values:
   braking: 0.5
   handling: 0.5
   max_speed: 9
+  min_speed: 0
 #  friction: 0
 
 max_values:
-  default_speed: 10
+  default_speed: 5
   acceleration: 3
   braking: 2.5
   handling: 8
   max_speed: 60
+  min_speed: 10
 #  friction: 1
 
 
@@ -21,6 +23,7 @@ ferrari:
   braking: 40
   handling: 30
   max_speed: 50
+  min_speed: 10
 #  friction: 50
 
 mclaren:
@@ -29,6 +32,7 @@ mclaren:
   braking: 40
   handling: 30
   max_speed: 50
+  min_speed: 10
 #  friction: 50
 
 f1:
@@ -37,4 +41,5 @@ f1:
   braking: 40
   handling: 30
   max_speed: 70
+  min_speed: 10
 #  friction: 50

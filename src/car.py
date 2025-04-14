@@ -55,6 +55,7 @@ class Car:
         self.handling = car_attributes['handling']
         # self.friction = car_attributes['friction']
         self.max_speed = car_attributes['max_speed']
+        self.min_speed = car_attributes['min_speed']
 
         # Set surface representing the car
         self.car_surface = pygame.Surface((self.car_width, self.car_height), pygame.SRCALPHA)
@@ -103,8 +104,8 @@ class Car:
         """
         # velocity shouldn't go above max speed
         self.velocity = min(self.velocity + speed, self.max_speed)
-        # velocity shouldn't go below 0
-        self.velocity = max(self.velocity, 0)
+        # velocity shouldn't go below min speed
+        self.velocity = max(self.velocity, self.min_speed)
 
     def accelerate(self):
         """ Accelerate the car. Uses the car's acceleration attribute. """
@@ -221,4 +222,4 @@ class Car:
         self.x_position = x
         self.y_position = y
         self.angle = angle
-        self.velocity = 0
+        self.velocity = self.min_speed
