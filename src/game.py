@@ -13,7 +13,8 @@ from utils.enums import Direction, Color
 pygame.init()
 # Constants
 FONT = pygame.font.SysFont('arial', 18)
-CHECKPOINT_THRESHOLD = 100
+CHECKPOINT_THRESHOLD = 100  # Consider the checkpoint reached, if x and y distance is less than this value
+ANGLE_THRESHOLD = 20  # Reward, if the angle difference is less than this value
 
 
 class GameAction:
@@ -157,12 +158,6 @@ class Game:
         score = self.get_score()
         reward = -0.5  # Start from negative to encourage taking action
 
-        # Distance from next checkpoint before action
-        x, y = self.get_distance_from_next_checkpoint()
-        previous_distance = math.sqrt(x ** 2 + y ** 2)
-        # Angle difference next checkpoint before action
-        previous_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
-
         # Apply action
         self.apply_action_on_car(action)
         # Update progression
@@ -171,7 +166,6 @@ class Game:
         done = self.__car_offtrack()
 
         current_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
-        ANGLE_THRESHOLD = 20  # Reward, if the angle difference is less than this value
         # Score
         if self.__is_closer_to_next_checkpoint():
             reward += 1  # closer to the next checkpoint
@@ -459,6 +453,55 @@ class Game:
     def get_score(self) -> int:
         """ Returns the sum of checkpoints reached in correct order. """
         return len(self.reached_checkpoints) + self.lap_count * len(self.track.get_checkpoints())
+
+    def draw_route(self, route: list[tuple[[int], [int]]], text: str = ''):
+        """
+        Draws the given route on the track. Wait for a button press (SPACE or ESC) to finish.
+
+        :param route: The list of positions (tuple).
+        :param text: A string to put on the display. Default is an empty string.
+        """
+        # Background
+        self.display.fill(Color.GRASS.value)
+        # Track
+        self.track.draw(self.display)
+        # Texts
+        info_text = FONT.render('Press SPACE or ESC to continue', True, Color.WHITE.value)
+        self.display.blit(info_text, [10, 10])
+        if text != '':
+            name_text = FONT.render(text, True, Color.WHITE.value)
+            self.display.blit(name_text, [10, 35])
+
+        # Route
+        # for position in route:
+        #     pygame.draw.circle(self.display, Color.RED.value, position, 3)
+        for i in range(len(route)):
+            try:
+                pygame.draw.line(self.display, Color.RED.value, route[i], route[i + 1])
+            except IndexError:
+                pass
+
+        # Update display
+        pygame.display.flip()
+
+        # Wait until buttons (SPACE or ESC) are not pressed (to ignore already pressed buttons)
+        while True:
+            pygame.event.pump()
+            keys = pygame.key.get_pressed()
+            if not (keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]):
+                break
+
+        # Wait for buttons presses (SPACE or ESC)
+        while True:
+            pygame.event.pump()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]:
+                break
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
 
 
 # When ran as main, the game will use player inputs.

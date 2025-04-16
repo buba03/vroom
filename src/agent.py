@@ -286,9 +286,13 @@ if __name__ == '__main__':
         MAX_LAPS = 10  # max laps to record per episode
         steps = 0  # for counting steps per episode
 
+        steps_per_point = 3  # steps required before saving a position in the current route
+        routes = dict()  # dictionary for storing routes, structure: dict[ list[ tuple[ [num], [num] ] ]
+
         for i in range(episode_count):
             steps = 0
             game.reset()
+            current_route = list()
 
             print(f'[Episode {i + 1}]', end=' ')
 
@@ -299,6 +303,9 @@ if __name__ == '__main__':
 
                 steps += 1
 
+                if steps % steps_per_point == 0:
+                    current_route.append(game.car.get_center_position())
+
                 if steps >= MAX_STEPS:
                     print(f'Reached max steps ({MAX_STEPS}). Score: {score}, Laps: {game.lap_count}')
                     break
@@ -308,3 +315,9 @@ if __name__ == '__main__':
                 if game.lap_count >= MAX_LAPS:
                     print(f'Successfully completed {MAX_LAPS} laps. Score: {score}, Steps: {steps}')
                     break
+
+            routes[i] = current_route
+
+        # Draw routes individually
+        for key, route in routes.items():
+            game.draw_route(route, f'[Episode {key + 1}]')
