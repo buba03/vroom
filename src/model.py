@@ -111,15 +111,21 @@ class QTrainer:
         loss.backward()
         self.optimizer.step()
 
-    def save(self):
+    def save(self, tag: str = ''):
         """
-        Saves the current state of the model and optimizer to a .pth file in the 'models' folder.
-        Uses the current time to name the file.
+        Saves the current state of the model and optimizer to a .pth file.
+        Creates a folder with the current formatted timestamp inside the 'models' directory.
+        If a tag is provided, it is appended to the filename.
         """
-        timestamp = TIMESTAMP.strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = TIMESTAMP.strftime('%Y-%m-%d_%H-%M-%S')
 
-        folder = 'models'
-        file_name = 'model_' + timestamp + '.pth'
+        # Create folder with timestamp
+        folder = os.path.join('models', timestamp)
+        os.makedirs(folder, exist_ok=True)
+
+        # Create filename with optional tag
+        file_name = 'model_' + timestamp + (f'_{tag}' if tag != '' else '') + '.pth'
+
         file_path = os.path.join(folder, file_name)
 
         torch.save({

@@ -23,7 +23,7 @@ EPSILON_DECAY = 0.9995  # ~4600 episodes
 # EPSILON_DECAY = 0.99    # ~230 episodes
 MIN_EPSILON = 0.1
 
-STATE_ATTRIBUTE_COUNT = 12
+STATE_ATTRIBUTE_COUNT = 10
 HIDDEN_LAYER_1 = 256
 HIDDEN_LAYER_2 = 256
 
@@ -106,8 +106,8 @@ class Agent:
             *rays,
             angle_difference,
             velocity,
-            x_distance,
-            y_distance
+            # x_distance,
+            # y_distance
         ]
 
         return np.array(state, dtype=float)
@@ -197,9 +197,11 @@ if __name__ == '__main__':
     game = Game(car_arg, track_arg)
 
     if not agent.eval:
-        MAX_STEPS = 15_000
-        record = 0
-        steps = 0
+        record = 0  # all-time best score
+        MAX_STEPS = 10_000  # max steps per episode
+        steps = 0  # for counting steps per episode
+        n = 100  # last n games' scores will be saved
+        recent_avg_record = 0  # last n games' best avg. score
 
         # For plotting
         plot_scores = []
@@ -230,6 +232,7 @@ if __name__ == '__main__':
             # Store experience for 'experience replay'
             agent.remember(state_old, final_move, reward, state_new, done)
 
+            # Update values
             steps += 1
             current_total_reward += reward
 
@@ -245,9 +248,7 @@ if __name__ == '__main__':
                 # Save model, if improved
                 if score > record:
                     record = score
-                    agent.trainer.save()
-
-                print(f"Game: {agent.episode_count}, Score: {score}, Record: {record}, Last 100 game avg. score: {sum(plot_rewards[-100:]) // 100}")
+                    agent.trainer.save(f'{record}pts')
 
                 # Plotting
                 plot_scores.append(score)
@@ -264,26 +265,46 @@ if __name__ == '__main__':
                 plot_steps.append(steps / MAX_STEPS)
                 debug_plot(plot_epsilon, plot_steps)
 
+                # Reset values
                 steps = 0
                 current_total_reward = 0
+
+                last_n_game_avg_score = sum(plot_scores[-n:]) // n
+                print(f'Game: {agent.episode_count}, Score: {score}, Record: {record}. '
+                      f'Last {n} game avg. score: {last_n_game_avg_score}, and record: {recent_avg_record}')
+
+                # Save model if avg. improved
+                if last_n_game_avg_score > recent_avg_record:
+                    recent_avg_record = last_n_game_avg_score
+                    agent.trainer.save(f'{record}avg')
 
     else:
         print('Running in evaluation mode...')
         agent.epsilon = 0.0  # only exploitation
-        num_eval_episodes = 10
+        episode_count = 10  # number of episode to evaluate
+        MAX_STEPS = 10_000  # max steps per episode
+        MAX_LAPS = 10  # max laps to record per episode
+        steps = 0  # for counting steps per episode
 
-        for episode in range(num_eval_episodes):
-            total_score = 0
+        for i in range(episode_count):
+            steps = 0
+            game.reset()
+
+            print(f'[Episode {i + 1}]', end=' ')
 
             while True:
                 state = agent.get_state(game)
                 action = agent.get_action(state)
                 _, done, score = game.play_step(action)
-                print(action)
 
-                total_score += score
+                steps += 1
 
+                if steps >= MAX_STEPS:
+                    print(f'Reached max steps ({MAX_STEPS}). Score: {score}, Laps: {game.lap_count}')
+                    break
                 if done:
-                    game.reset()
-                    print(f'Evaluation Episode {episode + 1}: Score = {total_score}')
+                    print(f'Game over. Score: {score}, Laps: {game.lap_count}')
+                    break
+                if game.lap_count >= MAX_LAPS:
+                    print(f'Successfully completed {MAX_LAPS} laps. Score: {score}, Steps: {steps}')
                     break

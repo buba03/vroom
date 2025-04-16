@@ -171,11 +171,11 @@ class Game:
         done = self.__car_offtrack()
 
         current_angle_difference = self.get_angle_difference_from_checkpoint(self.get_next_checkpoint())
-        ANGLE_THRESHOLD = 30  # Reward, if the angle difference is less than this value
+        ANGLE_THRESHOLD = 20  # Reward, if the angle difference is less than this value
         # Score
         if self.__is_closer_to_next_checkpoint():
             reward += 1  # closer to the next checkpoint
-        if previous_angle_difference > current_angle_difference or current_angle_difference < ANGLE_THRESHOLD:
+        if current_angle_difference < ANGLE_THRESHOLD:
             reward += 1  # direction is better to the next checkpoint
         # TODO reward for speed?
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
@@ -207,14 +207,14 @@ class Game:
 
         # Text
         # FIXME debug
-        text = FONT.render("Velocity: " + str(self.car.velocity), True, Color.WHITE.value)
+        text = FONT.render("Velocity: " + str(round(self.car.velocity, 1)), True, Color.WHITE.value)
         self.display.blit(text, [0, 0])
-        text = FONT.render("Angle: " + str(self.car.angle), True, Color.WHITE.value)
+        text = FONT.render("Angle: " + str(round(self.car.angle, 1)), True, Color.WHITE.value)
         self.display.blit(text, [0, 20])
         text = FONT.render(f"Position: x: {str(int(self.car.x_position))} y: {str(int(self.car.y_position))}", True,
                            Color.WHITE.value)
         self.display.blit(text, [0, 40])
-        text = FONT.render(f"FPS: {str(self.clock.get_fps())}", True, Color.WHITE.value)
+        text = FONT.render(f"FPS: {str(int(self.clock.get_fps()))}", True, Color.WHITE.value)
         self.display.blit(text, [0, 60])
         text = FONT.render(f"Progress: {str(self.reached_checkpoints)}", True, Color.WHITE.value)
         self.display.blit(text, [0, 80])
@@ -233,6 +233,9 @@ class Game:
         :param action: The action to execute.
         Must be a list with the length of possible action and filled with zeros, except at the index of the chosen action.
         """
+        # Slowly approach the default speed
+        self.car.approach_default_speed()
+
         # Action handler
         if action == GameAction.FORWARD:
             self.car.accelerate()
