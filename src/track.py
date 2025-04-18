@@ -1,6 +1,6 @@
 """ Module for racetrack implementation. """
 
-from random import randint
+import random
 import pygame
 
 from utils.config_manager import ConfigManager
@@ -18,18 +18,23 @@ def set_image(path: str, size: tuple) -> pygame.image:
     return pygame.transform.scale(img, size)
 
 
-def order_checkpoints(points: dict, index: int) -> dict:
+def order_checkpoints(points: dict, index: int, is_reverse: bool = False) -> dict:
     """
-    Orders the checkpoints from the given dictionary and index.
+    Orders the checkpoints from the given dictionary based on the starting index.
 
     :param points: The dictionary of the checkpoints.
     :param index: Index of the checkpoint which should be the starting one.
+    :param is_reverse: Whether to put the checkpoints in reverse order.
     :return: A new dictionary of the ordered checkpoints.
     """
     if index not in points:
         raise ValueError('Starting index not found in points.')
 
     ordered_keys = sorted(points.keys())
+
+    if is_reverse:
+        ordered_keys = ordered_keys[::-1]
+
     start_index = ordered_keys.index(index)
     reordered_keys = ordered_keys[start_index:] + ordered_keys[:start_index]
 
@@ -63,23 +68,32 @@ class Track:
         # Set track image according to the track_id
         self.image = set_image(ConfigManager().get_track_image_path(track_id), self.size)
 
-    def get_car_default_state(self, random: bool = True) -> tuple[float, float, float]:
+    def get_car_default_state(self, is_random: bool = True) -> tuple[float, float, float]:
         """
         Return a random car state from the yaml file and sets the correct order of the checkpoints based on that.
 
-        :param random: Whether to randomly return the car state or choose the first one.
+        :param is_random: Whether to randomly return the car state or choose the first one.
         :return: The car's x, y position and the angle as a tuple.
         """
         num_of_checkpoints = len(self.__checkpoints)
-        if random:
-            index = randint(0, num_of_checkpoints - 1)
+        if is_random:
+            index = random.randint(0, num_of_checkpoints - 1)
+            reverse = bool(random.randint(0, 1))
         else:
             index = 0
+            reverse = False
 
-        self.__checkpoints = order_checkpoints(self.__checkpoints, index)
-        return (self.__car_default_states[index]['x'],
-                self.__car_default_states[index]['y'],
-                self.__car_default_states[index]['angle'])
+        # Order checkpoints based on
+        self.__checkpoints = order_checkpoints(self.__checkpoints, index, reverse)
+
+        # Get values from yaml
+        x = self.__car_default_states[index]['x']
+        y = self.__car_default_states[index]['y']
+        angle = self.__car_default_states[index]['angle']
+        # Rotate angle if needed
+        angle = (angle + 180) % 360 if reverse else angle
+
+        return x, y, angle
 
     def get_checkpoints(self) -> list[tuple[float, float]]:
         """
