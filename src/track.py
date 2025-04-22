@@ -83,6 +83,8 @@ class Track:
             index = 0
             reverse = False
 
+        # TODO temporarily removed reverse maps
+        reverse = False
         # Order checkpoints based on
         self.__checkpoints = order_checkpoints(self.__checkpoints, index, reverse)
 
