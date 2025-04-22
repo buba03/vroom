@@ -276,7 +276,7 @@ if __name__ == '__main__':
                 # Save model if avg. improved
                 if last_n_game_avg_score > recent_avg_record:
                     recent_avg_record = last_n_game_avg_score
-                    agent.trainer.save(f'{record}avg')
+                    agent.trainer.save(f'{recent_avg_record}avg')
 
     else:
         print('Running in evaluation mode...')
