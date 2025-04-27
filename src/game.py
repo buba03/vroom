@@ -170,7 +170,7 @@ class Game:
         if self.__is_closer_to_next_checkpoint():
             reward += 1  # closer to the next checkpoint
         if current_angle_difference < ANGLE_THRESHOLD:
-            reward += 1  # direction is better to the next checkpoint
+            reward += 1  # correct direction to the next checkpoint
         # TODO reward for speed?
         # reward += self.car.velocity / self.car.max_speed  # faster -> more reward
         if self.get_score() > score:
