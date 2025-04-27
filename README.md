@@ -77,16 +77,6 @@ This section explains some key features of the project, that are only important 
 
 To add a **new car**, follow these steps:
 
-### Image
-
-Add your image (png) to the `src/resources/cars` folder.
-
-* recommended size: ~80x40 pixels.
-
-> **NOTE**: The image of the car must be facing to the right.
-
-> **NOTE**: The name of the image will be used as the `car_id` in the following steps.
-
 ### yaml
 
 Add the car and its attributes to the `cars.yaml` file in the `src/resources` folder.
@@ -101,11 +91,12 @@ The values are percentage based (between the `min_values` and `max_values`).
 
 ```yaml
 <car_id>:
+  default_speed: <num>
   acceleration: <num>
+  braking: <num>
   handling: <num>
   max_speed: <num>
-  max_reverse_speed: <num>
-  friction: <num>
+  min_speed: <num>
 ```
 
 Fill the values inside the `<>` brackets.
@@ -129,6 +120,7 @@ To add a **new track**, follow these steps:
 Add your image (png) to the `src/resources/tracks` folder.
 
 * recommended size: the same as the game window (see `game.yaml` in the `src/resources` folder).
+* color: the track's image must be the same color as shown in the `src/utils/enums.py`.
 
 > **NOTE**: The name of the image will be used as the `track_id` in the following steps.
 

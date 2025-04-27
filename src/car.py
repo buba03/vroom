@@ -53,7 +53,6 @@ class Car:
         self.acceleration = car_attributes['acceleration']
         self.braking = car_attributes['braking']
         self.handling = car_attributes['handling']
-        # self.friction = car_attributes['friction']
         self.max_speed = car_attributes['max_speed']
         self.min_speed = car_attributes['min_speed']
 
@@ -87,7 +86,6 @@ class Car:
         self.acceleration *= multiplier * multiplier
         self.braking *= multiplier * multiplier
         # self.handling /= multiplier
-        # self.friction *= multiplier * multiplier
         self.max_speed *= multiplier * multiplier
 
         HANDLING_VELOCITY_THRESHOLD *= multiplier
@@ -123,9 +121,6 @@ class Car:
 
         :param direction: The direction of the turn.
         """
-        # Apply extra friction when turning
-        # self.apply_friction()
-
         # Change multiplier based on Right - Left
         direction_multiplier = -1 if direction == Direction.RIGHT else 1
         # Change multiplier based in Velocity
@@ -153,23 +148,13 @@ class Car:
         self.angle = self.angle % 360
 
     def move(self):
-        """
-        Move the car based on the current velocity and angle of the car. Applies friction.
-        Uses the car's friction attribute.
-        """
-        # Apply friction before moving
-        # self.apply_friction()
+        """ Move the car based on the current velocity and angle. """
 
         # Calculate movement vector based on velocity and angle
         direction = rotate_vector((self.velocity, 0), self.angle)
         # Change position based on the movement vector
         self.x_position += direction[0]
         self.y_position += direction[1]
-
-    # def apply_friction(self):
-    #     """ Subtracts the friction from the car's current velocity. Uses the car's friction attribute. """
-    #     self.velocity = self.velocity - self.friction if not abs(
-    #         self.velocity) < self.friction else 0
 
     def approach_default_speed(self):
         """ Try to approach the car's default speed. Slow down if above, speed up if below the default speed. """
