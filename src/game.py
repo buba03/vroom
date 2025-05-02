@@ -1,5 +1,6 @@
 """ Module for game logic. When ran as main, the game will use the player controls. """
 
+import os
 import math
 
 import pygame
@@ -502,6 +503,20 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
+
+    def save_display(self, folder, filename):
+        """
+        Saves the current display into the export directory with the given folder and filename.
+
+        :param folder: The name of the folder inside the export directory.
+        :param filename: The name of the .png file to be saved. (.png is automatically concatonated)
+        """
+        # Create folder (if not yet created)
+        folder = os.path.join('export', folder)
+        os.makedirs(folder, exist_ok=True)
+        # Save image
+        path = os.path.join(folder, filename + '.png')
+        pygame.image.save(self.display, path)
 
 
 # When ran as main, the game will use player inputs.

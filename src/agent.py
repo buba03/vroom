@@ -103,6 +103,7 @@ class Agent:
         state = [
             # TODO more state attributes
             # can see checkpoint? (maybe front 3 rays?)
+            # distance from checkpoint !
             *rays,
             angle_difference,
             velocity,
@@ -321,3 +322,6 @@ if __name__ == '__main__':
         # Draw routes individually
         for key, route in routes.items():
             game.draw_route(route, f'[Episode {key + 1}]')
+            # Get the current model's path (without file extension)
+            folder = model_arg[:-4]
+            game.save_display(folder, f'ep-{key + 1}')

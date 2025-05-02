@@ -41,7 +41,7 @@ To deactivate the environment:
 deactivate
 ```
 
-# Run
+# Features
 
 ## Game
 
@@ -55,6 +55,8 @@ python src/game.py
 
 ## Agent
 
+### Training
+
 The agent will **start training** by playing the game.
 
 Activate the `.venv` and run the following command from the **project's root**:
@@ -63,11 +65,31 @@ Activate the `.venv` and run the following command from the **project's root**:
 python src/agent.py
 ```
 
+### Evaluation
+
+The agent will **evaluate** an existing model.
+
+Activate the `.venv` and run the following command from the **project's root**:
+
+```shell
+python src/agent.py --eval --modell path/to/the/model.pth
+```
+
+> **NOTE**: The path should be given from inside the project's `model` folder.
+
 ## Arguments
 
-* `--car example_car_id` (optional): choose the car (see choices: `src/utils/config_manager.py`)
-* `--track example_track_id` (optional): choose the track (see choices: `src/utils/config_manager.py`)
-* `--fps example_number` (optional): set the FPS
+Some **command line arguments** can be used to customize the environment. These are all optional with default values.
+
+More details (choices and default values) are in the `src/utils/config_manager.py` file.
+
+* `--car <car_id>`: Select the car
+* `--track <track_id>`: Select the track
+* `--fps <number>`: Set the FPS
+* `--model <path>`: Select an existing model (.pth file) to continue training or to start evaluation
+  * the path should be given from inside the project's `model` folder.
+* `--eval`: The agent will start in evaluation mode
+  * a model should be set with the `--model` argument
 
 # For developers
 
@@ -133,10 +155,16 @@ Add the track and its attributes to the `tracks.yaml` file in the `src/resources
 ```yaml
 <track_id>:
   size: <num>
-  car_default_state:
-    x_position: <num>
-    y_position: <num>
-    angle: <num>
+  car_default_states:
+    0:
+        x: <num>
+        y: <num>
+        angle: <num>
+    1:
+        x: <num>
+        y: <num>
+        angle: <num>
+#   ...
   checkpoints:
     0:
       x: <num>
@@ -149,10 +177,10 @@ Add the track and its attributes to the `tracks.yaml` file in the `src/resources
 
 Fill the values inside the `<>` brackets.
 
-* `size`: the size multiplier of the car. Changes the size of the image, and the attributes accordingly.
-    * default: `1`
-* `car_default_state`: the default position of the car when the game is reset.
-* `checkpoints`: at least 2 checkpoints are required
+* `size`: The size multiplier of the car. Changes the size of the image, and the attributes accordingly.
+    * default size: `1`
+* `car_default_states`: A possible default position of the car when the game is reset.
+* `checkpoints`: At least 2 checkpoints are required.
 
 ### ConfigManager
 
