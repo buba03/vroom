@@ -1,3 +1,7 @@
+# Vroom
+
+This project is a deep reinforcement learning environment where an AI agent learns to drive on customizable tracks using PyTorch and Pygame. It features manual gameplay, training, and evaluation modes, and supports user-defined cars and tracks through YAML configuration. The system includes visualization, flexible command-line arguments, and modular design for easy development and extension.
+
 # Prerequisites
 
 * **Windows 10** or above
